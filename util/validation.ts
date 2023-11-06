@@ -15,7 +15,7 @@ import { INTERFACE_IDS } from "@lukso/lsp-smart-contracts";
 import { controllerWallet } from "./wallet";
 import { interfaceIdOfPhygitalAsset } from "./PhygitalAsset";
 
-export async function throwIfInvalidAddress(address: string) {
+export function throwIfInvalidAddress(address: string) {
   if (!isAddress(address)) throw Error(`${address} is an invalid address`);
 }
 
