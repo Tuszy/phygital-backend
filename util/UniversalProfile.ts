@@ -66,20 +66,25 @@ export class UniversalProfile {
       { ipfsGateway: process.env.IPFS_GATEWAY }
     );
 
+    const compactBytesArrayPrefix = "0x0020"; // CompactBytesArray prefix (32 bytes following)
+    const restrictCallOperation = "0x00000010"; // restriction 'call' operation
+    const allowCallingAnyContractInstance =
+      "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"; // // allow calling any contract
+
     // https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md
     const allowedCallPermission = concat([
-      "0x0020", // CompactBytesArray prefix (32 bytes following)
-      "0x00000010", // restriction operation = Call
-      "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", // allow calling every contract instance of type PhygitalAsset
-      interfaceIdOfPhygitalAsset, // allowed interface id (PhygitalAsset)
+      compactBytesArrayPrefix,
+      restrictCallOperation,
+      allowCallingAnyContractInstance,
+      interfaceIdOfPhygitalAsset, // contract must must support the PhygitalAsset interface
       PhygitalAssetInterface.getFunction("mint")!.selector, // allow calling the 'mint' function
 
-      "0x0020", // CompactBytesArray prefix (32 bytes following)
-      "0x00000010", // restriction operation = Call
-      "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", // allow calling every contract instance of type PhygitalAsset
-      interfaceIdOfPhygitalAsset, // allowed interface id (PhygitalAsset)
+      compactBytesArrayPrefix,
+      restrictCallOperation,
+      allowCallingAnyContractInstance,
+      interfaceIdOfPhygitalAsset, // contract must must support the PhygitalAsset interface
       PhygitalAssetInterface.getFunction("verifyOwnershipAfterTransfer")!
-        .selector, // allow calling the 'mint' function
+        .selector, // allow calling the 'verifyOwnershipAfterTransfer' function
     ]).toLowerCase();
 
     const permissionData = keyManager.encodeData([
@@ -97,7 +102,9 @@ export class UniversalProfile {
 
     const hasNecessaryPermissions = async () => {
       try {
-        const data = await this.up["getData(bytes32[])"](permissionData.keys);
+        const data = await this.up["getDataBatch(bytes32[])"](
+          permissionData.keys
+        );
         const decodedPermissions = keyManager.decodePermissions(data[0]);
         const allowedCall = ((data[1] as string) ?? "").toLowerCase();
         return (
@@ -112,7 +119,7 @@ export class UniversalProfile {
 
     const setNecessaryPermissions = async (): Promise<boolean> => {
       try {
-        const tx = await this.up["setData(bytes32[],bytes[])"](
+        const tx = await this.up["setDataBatch(bytes32[],bytes[])"](
           permissionData.keys,
           permissionData.values,
           { gasLimit: 3000000 }
