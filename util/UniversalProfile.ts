@@ -1,5 +1,5 @@
 // Crypto
-import { Contract, Interface, AbiCoder, concat } from "ethers";
+import { Contract, Interface, concat } from "ethers";
 
 // ERC725
 import ERC725, { ERC725JSONSchema } from "@erc725/erc725.js";
@@ -85,6 +85,12 @@ export class UniversalProfile {
       interfaceIdOfPhygitalAsset, // contract must support the PhygitalAsset interface
       PhygitalAssetInterface.getFunction("verifyOwnershipAfterTransfer")!
         .selector, // allow calling the 'verifyOwnershipAfterTransfer' function
+
+      compactBytesArrayPrefix,
+      restrictCallOperation,
+      allowCallingAnyContractInstance,
+      interfaceIdOfPhygitalAsset, // contract must support the PhygitalAsset interface
+      PhygitalAssetInterface.getFunction("transfer")!.selector, // allow calling the 'transfer' function
     ]).toLowerCase();
 
     const permissionData = keyManager.encodeData([
