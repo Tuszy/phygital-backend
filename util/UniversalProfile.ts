@@ -37,7 +37,7 @@ export class UniversalProfile {
     );
 
     this.erc725 = new ERC725(
-      LSP6KeyManagerSchema as ERC725JSONSchema[],
+      LSP3ProfileMetadataSchema as ERC725JSONSchema[],
       this.universalProfileAddress,
       controllerWallet,
       { ipfsGateway: process.env.IPFS_GATEWAY }
@@ -65,7 +65,7 @@ export class UniversalProfile {
   ) {
     const controllerKey = process.env.PUBLIC_KEY;
     const keyManager = new ERC725(
-      LSP3ProfileMetadataSchema as ERC725JSONSchema[],
+      LSP6KeyManagerSchema as ERC725JSONSchema[],
       lsp6KeyManagerAddress,
       controllerWallet,
       { ipfsGateway: process.env.IPFS_GATEWAY }
