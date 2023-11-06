@@ -10,7 +10,7 @@ import { PhygitalAssetInterface } from "./Interfaces";
 // Validation
 import { throwIfAddressIsNotAPhygitalAsset } from "./validation";
 
-export const interfaceIdOfPhygitalAsset = 0x5f5b600b;
+export const interfaceIdOfPhygitalAsset = "0x5f5b600b";
 
 export class PhygitalAsset {
   constructor(
