@@ -13,6 +13,12 @@ import { OPERATION_TYPES } from "@lukso/lsp-smart-contracts";
 // Wallet
 import { controllerWallet } from "./wallet";
 
+// Validation
+import {
+  throwIfAddressIsNotAERC725Account,
+  throwIfAddressIsNotALSP6KeyManager,
+} from "./validation";
+
 export class UniversalProfile {
   constructor(private universalProfileAddress: string) {}
 
@@ -22,6 +28,7 @@ export class UniversalProfile {
     functionName: string,
     ...params: any[]
   ) {
+    throwIfAddressIsNotAERC725Account(this.universalProfileAddress);
     const LSP0ERC725Account = new Contract(
       this.universalProfileAddress,
       LSP0ERC725AccountABIInterface,
@@ -29,6 +36,7 @@ export class UniversalProfile {
     );
 
     const lsp6KeyManagerAddress = (await LSP0ERC725Account.owner()) as string;
+    throwIfAddressIsNotALSP6KeyManager(lsp6KeyManagerAddress);
 
     const LSP6KeyManager = new Contract(
       lsp6KeyManagerAddress,

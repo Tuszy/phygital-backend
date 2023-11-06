@@ -7,13 +7,18 @@ import { UniversalProfile } from "./UniversalProfile";
 // Interfaces
 import { PhygitalAssetInterface } from "./Interfaces";
 
+// Validation
+import { throwIfAddressIsNotAPhygitalAsset } from "./validation";
+
 export const interfaceIdOfPhygitalAsset = 0x5f5b600b;
 
 export class PhygitalAsset {
   constructor(
     private phygitalAssetContractAddress: string,
     private universalProfile: UniversalProfile
-  ) {}
+  ) {
+    throwIfAddressIsNotAPhygitalAsset(phygitalAssetContractAddress);
+  }
 
   public async mint(
     phygitalId: BytesLike,
