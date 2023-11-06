@@ -1,12 +1,11 @@
 // Crypto
-import { AddressLike, BytesLike, BigNumberish, Interface } from "ethers";
+import { AddressLike, BytesLike, BigNumberish } from "ethers";
 
-// ABI
-import { abi as PhygitalAssetABI } from "../artifact/PhygitalAsset.json";
+// Universal Profile
 import { UniversalProfile } from "./UniversalProfile";
 
 // Interfaces
-const PhygitalAssetInterface: Interface = new Interface(PhygitalAssetABI);
+import { PhygitalAssetInterface } from "./Interfaces";
 
 export class PhygitalAsset {
   constructor(

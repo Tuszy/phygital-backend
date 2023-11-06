@@ -1,13 +1,11 @@
 // Crypto
 import { Contract, Interface, AddressLike } from "ethers";
 
-// ABI
-import { abi as LSP0ERC725AccountABI } from "@lukso/lsp-smart-contracts/artifacts/LSP0ERC725Account.json";
-import { abi as LSP6KeyManagerABI } from "@lukso/lsp-smart-contracts/artifacts/LSP6KeyManager.json";
-
 // Interfaces
-const LSP0ERC725AccountABIInterface = new Interface(LSP0ERC725AccountABI);
-const LSP6KeyManagerInterface = new Interface(LSP6KeyManagerABI);
+import {
+  LSP0ERC725AccountABIInterface,
+  LSP6KeyManagerInterface,
+} from "./Interfaces";
 
 // Wallet
 import { controllerWallet } from "./wallet";
