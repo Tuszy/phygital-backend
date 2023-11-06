@@ -76,13 +76,13 @@ export class UniversalProfile {
       compactBytesArrayPrefix,
       restrictCallOperation,
       allowCallingAnyContractInstance,
-      interfaceIdOfPhygitalAsset, // contract must must support the PhygitalAsset interface
+      interfaceIdOfPhygitalAsset, // contract must support the PhygitalAsset interface
       PhygitalAssetInterface.getFunction("mint")!.selector, // allow calling the 'mint' function
 
       compactBytesArrayPrefix,
       restrictCallOperation,
       allowCallingAnyContractInstance,
-      interfaceIdOfPhygitalAsset, // contract must must support the PhygitalAsset interface
+      interfaceIdOfPhygitalAsset, // contract must support the PhygitalAsset interface
       PhygitalAssetInterface.getFunction("verifyOwnershipAfterTransfer")!
         .selector, // allow calling the 'verifyOwnershipAfterTransfer' function
     ]).toLowerCase();
