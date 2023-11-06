@@ -1,5 +1,5 @@
 // Crypto
-import { Contract, Interface, AbiCoder } from "ethers";
+import { Contract, Interface, AbiCoder, concat } from "ethers";
 
 // ERC725
 import ERC725, { ERC725JSONSchema } from "@erc725/erc725.js";
@@ -10,7 +10,9 @@ import LSP6KeyManagerSchema from "@erc725/erc725.js/schemas/LSP6KeyManager.json"
 import {
   LSP0ERC725AccountABIInterface,
   LSP6KeyManagerInterface,
+  PhygitalAssetInterface,
 } from "./Interfaces";
+import { interfaceIdOfPhygitalAsset } from "./PhygitalAsset";
 
 // Constants
 import { OPERATION_TYPES } from "@lukso/lsp-smart-contracts";
@@ -44,13 +46,9 @@ export class UniversalProfile {
     );
   }
 
-  private async throwIfPermissionsAreNotSet(
-    lsp6KeyManagerAddress: string,
-    contractAddress: string
-  ) {
+  private async throwIfPermissionsAreNotSet(lsp6KeyManagerAddress: string) {
     const { hasNecessaryPermissions } = await this.createPermissionFunctions(
-      lsp6KeyManagerAddress,
-      contractAddress
+      lsp6KeyManagerAddress
     );
 
     if (!(await hasNecessaryPermissions()))
@@ -59,11 +57,8 @@ export class UniversalProfile {
       );
   }
 
-  public async createPermissionFunctions(
-    lsp6KeyManagerAddress: string,
-    contractAddress: string
-  ) {
-    const controllerKey = process.env.PUBLIC_KEY;
+  public async createPermissionFunctions(lsp6KeyManagerAddress: string) {
+    const controllerKey = process.env.PUBLIC_KEY as string;
     const keyManager = new ERC725(
       LSP6KeyManagerSchema as ERC725JSONSchema[],
       lsp6KeyManagerAddress,
@@ -71,36 +66,44 @@ export class UniversalProfile {
       { ipfsGateway: process.env.IPFS_GATEWAY }
     );
 
+    // https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-6-KeyManager.md
+    const allowedCallPermission = concat([
+      "0x0020", // CompactBytesArray prefix (32 bytes following)
+      "0x00000010", // restriction operation = Call
+      "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", // allow calling every contract instance of type PhygitalAsset
+      interfaceIdOfPhygitalAsset, // allowed interface id (PhygitalAsset)
+      PhygitalAssetInterface.getFunction("mint")!.selector, // allow calling the 'mint' function
+
+      "0x0020", // CompactBytesArray prefix (32 bytes following)
+      "0x00000010", // restriction operation = Call
+      "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", // allow calling every contract instance of type PhygitalAsset
+      interfaceIdOfPhygitalAsset, // allowed interface id (PhygitalAsset)
+      PhygitalAssetInterface.getFunction("verifyOwnershipAfterTransfer")!
+        .selector, // allow calling the 'mint' function
+    ]).toLowerCase();
+
     const permissionData = keyManager.encodeData([
       {
         keyName: "AddressPermissions:Permissions:<address>",
         dynamicKeyParts: controllerKey,
-        value: keyManager.encodePermissions({ CALL: true }),
+        value: keyManager.encodePermissions({ CALL: true, DEPLOY: true }),
       },
       {
-        keyName: "AddressPermissions:AllowedAddresses:<address>",
+        keyName: "AddressPermissions:AllowedCalls:<address>",
         dynamicKeyParts: controllerKey,
-        value: [contractAddress],
+        value: allowedCallPermission,
       },
     ]);
 
     const hasNecessaryPermissions = async () => {
-      const data = await this.up["getData(bytes32[])"](permissionData.keys);
-
       try {
-        const addresses = AbiCoder.defaultAbiCoder().decode(
-          ["address[]"],
-          data[1]
-        )[0];
-
+        const data = await this.up["getData(bytes32[])"](permissionData.keys);
+        const decodedPermissions = keyManager.decodePermissions(data[0]);
+        const allowedCall = ((data[1] as string) ?? "").toLowerCase();
         return (
-          keyManager.decodePermissions(data[0]).CALL &&
-          Boolean(
-            addresses.find(
-              (address: string) =>
-                address.toLowerCase() === contractAddress.toLowerCase()
-            )
-          )
+          decodedPermissions.CALL &&
+          decodedPermissions.DEPLOY &&
+          allowedCallPermission === allowedCall
         );
       } catch (e) {}
 
@@ -135,10 +138,7 @@ export class UniversalProfile {
     const lsp6KeyManagerAddress = (await this.erc725.getOwner()) as string;
     throwIfAddressIsNotALSP6KeyManager(lsp6KeyManagerAddress);
 
-    await this.throwIfPermissionsAreNotSet(
-      lsp6KeyManagerAddress,
-      contractAddress
-    );
+    await this.throwIfPermissionsAreNotSet(lsp6KeyManagerAddress);
 
     const LSP6KeyManager = new Contract(
       lsp6KeyManagerAddress,
