@@ -1,0 +1,23 @@
+{
+  "name": "phygital-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend for creating and minting phygitals in a user-friendly way by using an app specific controller key.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "lukso",
+    "phygital",
+    "nft",
+    "smart contract"
+  ],
+  "author": "Dennis Tuszynski",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@vercel/node": "^3.0.7",
+    "ethers": "^6.8.1"
+  }
+}
