@@ -9,7 +9,7 @@ import {
 } from "./Interfaces";
 
 // Constants
-import { INTERFACE_IDS } from "@lukso/lsp-smart-contracts/dist/constants.cjs.js";
+import { INTERFACE_IDS } from "@lukso/lsp-smart-contracts";
 
 // Wallet
 import { controllerWallet } from "./wallet";

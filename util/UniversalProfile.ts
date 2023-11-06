@@ -8,7 +8,7 @@ import {
 } from "./Interfaces";
 
 // Constants
-import { OPERATION_TYPES } from "@lukso/lsp-smart-contracts/dist/constants.cjs.js";
+import { OPERATION_TYPES } from "@lukso/lsp-smart-contracts";
 
 // Wallet
 import { controllerWallet } from "./wallet";
