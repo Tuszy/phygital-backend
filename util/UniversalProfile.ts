@@ -7,6 +7,9 @@ import {
   LSP6KeyManagerInterface,
 } from "./Interfaces";
 
+// Constants
+import { OPERATION_TYPES } from "@lukso/lsp-smart-contracts/dist/constants.cjs.js";
+
 // Wallet
 import { controllerWallet } from "./wallet";
 
@@ -39,7 +42,7 @@ export class UniversalProfile {
     );
     const encodedExecuteCall = LSP0ERC725AccountABIInterface.encodeFunctionData(
       "execute",
-      [0, contractAddress, 0, encodedInterfaceCall]
+      [OPERATION_TYPES.CALL, contractAddress, 0, encodedInterfaceCall]
     );
     const tx = await LSP6KeyManager.execute(encodedExecuteCall);
     await tx.wait();

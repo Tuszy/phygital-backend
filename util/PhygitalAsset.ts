@@ -7,6 +7,8 @@ import { UniversalProfile } from "./UniversalProfile";
 // Interfaces
 import { PhygitalAssetInterface } from "./Interfaces";
 
+export const interfaceIdOfPhygitalAsset = 0x5f5b600b;
+
 export class PhygitalAsset {
   constructor(
     private phygitalAssetContractAddress: string,
