@@ -64,3 +64,49 @@ export class PhygitalAsset {
     );
   }
 }
+
+export type PhygitalAssetAttribute = {
+  key: string;
+  value: string;
+  type: string;
+};
+
+export type PhygitalAssetFile = {
+  width: number;
+  height: number;
+  verificationFunction: string;
+  verificationData: string;
+  url: string;
+};
+
+export type PhygitalAssetImage = {
+  verificationFunction: string;
+  verificationData: string;
+  url: string;
+  fileType: number;
+};
+
+export type PhygitalAssetLink = {
+  title: string;
+  url: string;
+};
+
+export type PhygitalAssetMetadata = {
+  description?: string;
+  links?: PhygitalAssetLink[];
+  icon?: PhygitalAssetImage[];
+  images?: PhygitalAssetImage[];
+  assets?: PhygitalAssetFile[];
+  attributes?: PhygitalAssetAttribute[];
+};
+
+export type PhygitalAssetData = {
+  tokenName: string;
+  tokenSymbol: string;
+  metadata: PhygitalAssetMetadata;
+};
+
+export const createNewPhygitalAsset = async (
+  universalProfile: UniversalProfile,
+  phygitalAssetData: PhygitalAssetData
+) => {};
