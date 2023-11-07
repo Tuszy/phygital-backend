@@ -65,10 +65,7 @@ export const decodeLSP2JSONURL = async (
   }
 
   const ipfsURL = toUtf8String(getBytes(hexlifiedIpfsURL));
-
-  const response = await fetch(
-    process.env.IPFS_GATEWAY + "/" + ipfsURL.replace("ipfs://", "")
-  );
+  const response = await fetch(getURLWithIPFSGateway(ipfsURL));
 
   if (response.status !== 200) {
     console.error(

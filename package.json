@@ -24,6 +24,7 @@
     "@vercel/node": "^3.0.7",
     "ethers": "^6.8.1",
     "ipfs-http-client": "^60.0.1",
-    "merkletreejs": "^0.3.11"
+    "merkletreejs": "^0.3.11",
+    "zod": "^3.22.4"
   }
 }
