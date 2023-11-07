@@ -9,7 +9,7 @@ import { z } from "zod";
 
 // Helper
 import { UniversalProfile } from "../util/UniversalProfile";
-import { PhygitalAsset } from "../util/PhygitalAsset.1";
+import { PhygitalAsset } from "../util/PhygitalAsset";
 
 const QuerySchema = z.object({
   universal_profile_address: z
