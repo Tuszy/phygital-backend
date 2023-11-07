@@ -1,28 +1,36 @@
 // Crypto
 import { AddressLike, BytesLike, Contract } from "ethers";
 
+// Types
+import { LSP4MetadataType } from "./LSP4Metadata";
+
 // Universal Profile
 import { UniversalProfile } from "./UniversalProfile";
 
-// Constants
+// Interfaces
 import { PhygitalAssetInterface } from "./Interfaces";
 
-// Constants
-export const interfaceIdOfPhygitalAsset = "0x5f5b600b";
-export const phygitalAssetCollectionUriKey =
-  "0x4eff76d745d12fd5e5f7b38e8f396dd0d099124739e69a289ca1faa7ebc53768";
+// Contract Factory
+import { PhygitalAssetContractFactory } from "./contract-factories";
 
 // Validation
 import { throwIfAddressIsNotAPhygitalAsset } from "./contract-validation";
 
 // Helper
-import { decodeLSP2JSONURL } from "./ipfs-client";
+import {
+  decodeLSP2JSONURL,
+  uploadJSONToIPFSAndGetLSP2JSONURL,
+} from "./ipfs-client";
 import { controllerWallet } from "./wallet";
 import { keccak256 } from "./crypto";
 
 // Merkle Tree
 import { MerkleTree } from "merkletreejs";
 
+// Constants
+export const interfaceIdOfPhygitalAsset = "0x5f5b600b";
+export const phygitalAssetCollectionUriKey =
+  "0x4eff76d745d12fd5e5f7b38e8f396dd0d099124739e69a289ca1faa7ebc53768";
 export class PhygitalAsset {
   private phygitalAssetContract: Contract;
   constructor(
@@ -134,48 +142,34 @@ export class PhygitalAsset {
   }
 }
 
-export type PhygitalAssetAttribute = {
-  key: string;
-  value: string;
-  type: string;
-};
-
-export type PhygitalAssetFile = {
-  width: number;
-  height: number;
-  verificationFunction: string;
-  verificationData: string;
-  url: string;
-};
-
-export type PhygitalAssetImage = {
-  verificationFunction: string;
-  verificationData: string;
-  url: string;
-  fileType: number;
-};
-
-export type PhygitalAssetLink = {
-  title: string;
-  url: string;
-};
-
-export type PhygitalAssetMetadata = {
-  description?: string;
-  links?: PhygitalAssetLink[];
-  icon?: PhygitalAssetImage[];
-  images?: PhygitalAssetImage[];
-  assets?: PhygitalAssetFile[];
-  attributes?: PhygitalAssetAttribute[];
-};
-
-export type PhygitalAssetData = {
-  tokenName: string;
-  tokenSymbol: string;
-  metadata: PhygitalAssetMetadata;
-};
-
 export const createNewPhygitalAsset = async (
   universalProfile: UniversalProfile,
-  phygitalAssetData: PhygitalAssetData
-) => {};
+  name: string,
+  symbol: string,
+  phygitalCollection: string[],
+  metadata: LSP4MetadataType
+): Promise<AddressLike> => {
+  const merkleTree = new MerkleTree(phygitalCollection, keccak256("bytes"));
+  const merkleRoot = merkleTree.getHexRoot();
+  const phygitalCollectionJSONURL = await uploadJSONToIPFSAndGetLSP2JSONURL(
+    `PhygitalAsset:Collection:${name}:${symbol}:${universalProfile.address}`,
+    phygitalCollection
+  );
+  const metadataJSONURL = await uploadJSONToIPFSAndGetLSP2JSONURL(
+    `PhygitalAsset:LSP4Metadata:${name}:${symbol}:${universalProfile.address}`,
+    metadata
+  );
+
+  const deploymentTx = await PhygitalAssetContractFactory.deploy(
+    merkleRoot,
+    phygitalCollectionJSONURL,
+    name,
+    symbol,
+    metadataJSONURL,
+    universalProfile.address
+  );
+
+  await deploymentTx.waitForDeployment();
+
+  return deploymentTx.target;
+};

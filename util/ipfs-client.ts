@@ -8,15 +8,16 @@ import {
   getBytes,
 } from "ethers";
 
-// IPFS
-import { create, IPFSHTTPClient } from "ipfs-http-client";
+// Pinata
+import PinataSDK from "@pinata/sdk";
 
 // Constants
 import { KECCAK_256_HASH_FUNCTION } from "./crypto";
 
-export const ipfsClient: IPFSHTTPClient = create({
-  url: process.env.IPFS_UPLOAD_GATEWAY,
-});
+const ipfsClient = new PinataSDK(
+  process.env.PINATA_API_KEY,
+  process.env.PINATA_SECRET_API_KEY
+);
 
 // see https://github.com/lukso-network/LIPs/blob/main/LSPs/LSP-2-ERC725YJSONSchema.md#JSONURL
 export const getLSP2JSONURL = (json: Object, ipfsURL: string): string => {
@@ -35,19 +36,32 @@ export const getLSP2JSONURL = (json: Object, ipfsURL: string): string => {
 };
 
 export const uploadJSONToIPFSAndGetLSP2JSONURL = async (
+  name: string,
   json: Object
 ): Promise<null | string> => {
-  const cid = await uploadJSONToIPFS(json);
+  const cid = await uploadJSONToIPFS(name, json);
   if (!cid) return null;
   return await getLSP2JSONURL(json, `ipfs://${cid}`);
 };
 
 export const uploadJSONToIPFS = async (
+  name: string,
   json: Object
 ): Promise<null | string> => {
-  const uploadResult = await ipfsClient.add(JSON.stringify(json));
-  if (!uploadResult?.cid) return null;
-  return uploadResult.cid.toString();
+  try {
+    const uploadResult = await ipfsClient.pinJSONToIPFS(json, {
+      pinataMetadata: {
+        name: name,
+      },
+      pinataOptions: {
+        cidVersion: 0,
+      },
+    });
+    if (!uploadResult?.IpfsHash) return null;
+    return uploadResult.IpfsHash;
+  } catch (e) {
+    throw Error(`Upload to IPFS failed (${e.message})`);
+  }
 };
 
 export const decodeLSP2JSONURL = async (
