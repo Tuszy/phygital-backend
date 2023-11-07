@@ -13,7 +13,7 @@ export const phygitalAssetCollectionUriKey =
   "0x4eff76d745d12fd5e5f7b38e8f396dd0d099124739e69a289ca1faa7ebc53768";
 
 // Validation
-import { throwIfAddressIsNotAPhygitalAsset } from "./validation";
+import { throwIfAddressIsNotAPhygitalAsset } from "./contract-validation";
 
 // Helper
 import { decodeLSP2JSONURL } from "./ipfs-client";
@@ -28,10 +28,13 @@ export class PhygitalAsset {
   constructor(
     private phygitalAssetContractAddress: string,
     private universalProfile: UniversalProfile
-  ) {
-    throwIfAddressIsNotAPhygitalAsset(phygitalAssetContractAddress);
+  ) {}
+
+  public async init() {
+    await throwIfAddressIsNotAPhygitalAsset(this.phygitalAssetContractAddress);
+
     this.phygitalAssetContract = new Contract(
-      phygitalAssetContractAddress,
+      this.phygitalAssetContractAddress,
       PhygitalAssetInterface,
       controllerWallet
     );

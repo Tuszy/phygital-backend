@@ -24,13 +24,15 @@ import { controllerWallet } from "./wallet";
 import {
   throwIfAddressIsNotAERC725Account,
   throwIfAddressIsNotALSP6KeyManager,
-} from "./validation";
+} from "./contract-validation";
 
 export class UniversalProfile {
   private up: Contract;
   private erc725: ERC725;
-  constructor(private universalProfileAddress: string) {
-    throwIfAddressIsNotAERC725Account(this.universalProfileAddress);
+  constructor(private universalProfileAddress: string) {}
+
+  public async init() {
+    await throwIfAddressIsNotAERC725Account(this.universalProfileAddress);
 
     this.up = new Contract(
       this.universalProfileAddress,
@@ -149,7 +151,7 @@ export class UniversalProfile {
     ...params: any[]
   ) {
     const lsp6KeyManagerAddress = (await this.erc725.getOwner()) as string;
-    throwIfAddressIsNotALSP6KeyManager(lsp6KeyManagerAddress);
+    await throwIfAddressIsNotALSP6KeyManager(lsp6KeyManagerAddress);
 
     await this.throwIfPermissionsAreNotSet(lsp6KeyManagerAddress);
 
