@@ -14,10 +14,8 @@ import { UniversalProfile } from "../util/UniversalProfile";
 import { PhygitalAsset } from "../util/PhygitalAsset";
 
 const QuerySchema = z.object({
-  universal_profile_address: zodAddressValidator("Universal Profile Address"),
-  phygital_asset_contract_address: zodAddressValidator(
-    "Phygital Asset Contract Address"
-  ),
+  universal_profile_address: zodAddressValidator(),
+  phygital_asset_contract_address: zodAddressValidator(),
   phygital_id: zodPhygitalIdValidator(),
   phygital_signature: zodPhygitalSignatureValidator(),
 });

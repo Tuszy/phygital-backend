@@ -4,13 +4,13 @@ import { isAddress } from "ethers";
 // Validation
 import { z } from "zod";
 
-export const zodAddressValidator = (fieldName: string) =>
+export const zodAddressValidator = () =>
   z
     .string()
     .startsWith("0x")
     .length(42) // 0x + 20bytes in hex
     .refine(isAddress, {
-      message: `${fieldName} is not a valid address`,
+      message: `Invalid address`,
     });
 
 export const zodPhygitalIdValidator = () =>
