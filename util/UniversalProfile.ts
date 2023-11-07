@@ -88,11 +88,11 @@ export class UniversalProfile {
       PhygitalAssetInterface.getFunction("verifyOwnershipAfterTransfer")!
         .selector, // allow calling the 'verifyOwnershipAfterTransfer' function
 
-      compactBytesArrayPrefix,
+      /*compactBytesArrayPrefix,
       restrictCallOperation,
       allowCallingAnyContractInstance,
       interfaceIdOfPhygitalAsset, // contract must support the PhygitalAsset interface
-      PhygitalAssetInterface.getFunction("transfer")!.selector, // allow calling the 'transfer' function
+      PhygitalAssetInterface.getFunction("transfer")!.selector, // allow calling the 'transfer' function*/
     ]).toLowerCase();
 
     const permissionData = keyManager.encodeData([
