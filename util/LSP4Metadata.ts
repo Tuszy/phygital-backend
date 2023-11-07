@@ -28,9 +28,9 @@ const LSP4MetadataLink = z.object({
 
 export const LSP4Metadata = z.object({
   description: z.string(),
-  links: z.array(LSP4MetadataLink).min(1),
-  icon: z.array(LSP4MetadataImage).min(1),
-  images: z.array(LSP4MetadataImage).min(1),
+  links: z.array(LSP4MetadataLink).optional(),
+  icon: z.array(LSP4MetadataImage).optional(),
+  images: z.array(LSP4MetadataImage).optional(),
   assets: z.array(LSP4MetadataAsset).optional(),
   attributes: z.array(LSP4MetadataAttribute).optional(),
 });
