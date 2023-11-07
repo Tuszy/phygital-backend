@@ -40,6 +40,7 @@ export default async function (
       data.metadata
     );
 
+    response.setHeader("content-type", "application/json");
     response.status(200);
     response.json({
       message: "Successfully created phygital",

@@ -43,6 +43,7 @@ export default async function (
       data.phygital_signature
     );
 
+    response.setHeader("content-type", "application/json");
     response.status(200);
     response.json({
       message: "Successfully verified phygital from collection",
