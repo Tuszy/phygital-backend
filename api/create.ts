@@ -11,8 +11,9 @@ import {
 
 // Helper
 import { UniversalProfile } from "../util/UniversalProfile";
+import { createNewPhygitalAsset } from "../util/PhygitalAsset";
 
-const QuerySchema = z.object({
+const Schema = z.object({
   universal_profile_address: zodAddressValidator(),
   phygital_asset_contract_address: zodAddressValidator(),
   phygital_id: zodPhygitalIdValidator(),
@@ -24,16 +25,23 @@ export default async function (
   response: VercelResponse
 ) {
   try {
-    const query = QuerySchema.parse(request.query);
+    const data = Schema.parse(request.body);
     const universalProfile = new UniversalProfile(
-      query.universal_profile_address
+      data.universal_profile_address
     );
     await universalProfile.validate();
+
+    await createNewPhygitalAsset(
+      universalProfile,
+      data.name,
+      data.symbol,
+      data.phygital_collection
+    );
 
     response.status(200);
     response.json({
       message: "Successfully created phygital",
-      ...query,
+      ...data,
     });
   } catch (e: any) {
     response.status(400);
