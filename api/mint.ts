@@ -29,14 +29,14 @@ export default async function (
     const universalProfile = new UniversalProfile(
       query.universal_profile_address
     );
-    await universalProfile.init();
+    await universalProfile.validate();
 
     const phygitalAsset = new PhygitalAsset(
       query.phygital_asset_contract_address,
       universalProfile
     );
 
-    await phygitalAsset.init();
+    await phygitalAsset.validate();
 
     await phygitalAsset.mint(query.phygital_id, query.phygital_signature);
 
@@ -45,8 +45,8 @@ export default async function (
       message: "Successfully minted phygital from collection",
       ...query,
     });
-  } catch (e) {
+  } catch (e: any) {
     response.status(400);
-    response.json(e);
+    response.json(e?.message ?? e);
   }
 }

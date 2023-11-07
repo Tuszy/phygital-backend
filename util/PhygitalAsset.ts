@@ -28,16 +28,16 @@ export class PhygitalAsset {
   constructor(
     private phygitalAssetContractAddress: string,
     private universalProfile: UniversalProfile
-  ) {}
-
-  public async init() {
-    await throwIfAddressIsNotAPhygitalAsset(this.phygitalAssetContractAddress);
-
+  ) {
     this.phygitalAssetContract = new Contract(
       this.phygitalAssetContractAddress,
       PhygitalAssetInterface,
       controllerWallet
     );
+  }
+
+  public async validate() {
+    await throwIfAddressIsNotAPhygitalAsset(this.phygitalAssetContractAddress);
   }
 
   private async getPhygitalCollectionOrThrow() {

@@ -29,11 +29,7 @@ import {
 export class UniversalProfile {
   private up: Contract;
   private erc725: ERC725;
-  constructor(private universalProfileAddress: string) {}
-
-  public async init() {
-    await throwIfAddressIsNotAERC725Account(this.universalProfileAddress);
-
+  constructor(private universalProfileAddress: string) {
     this.up = new Contract(
       this.universalProfileAddress,
       LSP0ERC725AccountABIInterface,
@@ -46,6 +42,10 @@ export class UniversalProfile {
       controllerWallet,
       { ipfsGateway: process.env.IPFS_GATEWAY }
     );
+  }
+
+  public async validate() {
+    await throwIfAddressIsNotAERC725Account(this.universalProfileAddress);
   }
 
   private async throwIfPermissionsAreNotSet(lsp6KeyManagerAddress: string) {

@@ -1,9 +1,14 @@
+// Load environment variables
+import "dotenv/config";
+
+// Crypto
 import { JsonRpcProvider, Wallet } from "ethers";
 
 // Provider
 export const provider: JsonRpcProvider = new JsonRpcProvider(
   `${process.env.RPC_URL}?apiKey=${process.env.RPC_URL_API_KEY}`,
   {
+    name: "Lukso",
     chainId: parseInt(process.env.CHAIN_ID as string),
   }
 );
