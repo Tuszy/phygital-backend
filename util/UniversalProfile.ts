@@ -99,7 +99,7 @@ export class UniversalProfile {
       {
         keyName: "AddressPermissions:Permissions:<address>",
         dynamicKeyParts: controllerKey,
-        value: keyManager.encodePermissions({ CALL: true, DEPLOY: true }),
+        value: keyManager.encodePermissions({ CALL: true }),
       },
       {
         keyName: "AddressPermissions:AllowedCalls:<address>",
@@ -115,11 +115,7 @@ export class UniversalProfile {
         );
         const decodedPermissions = keyManager.decodePermissions(data[0]);
         const allowedCall = ((data[1] as string) ?? "").toLowerCase();
-        return (
-          decodedPermissions.CALL &&
-          decodedPermissions.DEPLOY &&
-          allowedCallPermission === allowedCall
-        );
+        return decodedPermissions.CALL && allowedCallPermission === allowedCall;
       } catch (e) {}
 
       return false;
