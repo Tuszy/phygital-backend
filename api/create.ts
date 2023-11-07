@@ -5,9 +5,9 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { z } from "zod";
 import {
   zodAddressValidator,
-  zodPhygitalIdValidator,
-  zodPhygitalSignatureValidator,
+  zodPhygitalCollectionValidator,
 } from "../util/input-validation";
+import { LSP4Metadata } from "../util/LSP4Metadata";
 
 // Helper
 import { UniversalProfile } from "../util/UniversalProfile";
@@ -15,9 +15,10 @@ import { createNewPhygitalAsset } from "../util/PhygitalAsset";
 
 const Schema = z.object({
   universal_profile_address: zodAddressValidator(),
-  phygital_asset_contract_address: zodAddressValidator(),
-  phygital_id: zodPhygitalIdValidator(),
-  phygital_signature: zodPhygitalSignatureValidator(),
+  name: z.string(),
+  symbol: z.string(),
+  phygital_collection: zodPhygitalCollectionValidator(),
+  metadata: LSP4Metadata,
 });
 
 export default async function (
@@ -35,7 +36,8 @@ export default async function (
       universalProfile,
       data.name,
       data.symbol,
-      data.phygital_collection
+      data.phygital_collection,
+      data.metadata
     );
 
     response.status(200);

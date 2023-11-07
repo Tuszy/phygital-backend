@@ -14,7 +14,10 @@ export const zodAddressValidator = () =>
     });
 
 export const zodPhygitalIdValidator = () =>
-  z.string().startsWith("0x").length(66); // 0x + 32bytes in hex;
+  z.string().startsWith("0x").length(66); // 0x + 32bytes in hex
+
+export const zodPhygitalCollectionValidator = () =>
+  z.array(zodPhygitalIdValidator()).min(1); // list of phygital ids
 
 export const zodPhygitalSignatureValidator = () =>
   z.string().startsWith("0x").length(132); // 0x + 65bytes in hex
