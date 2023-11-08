@@ -4,7 +4,7 @@ import { Contract, Interface, concat } from "ethers";
 // ERC725
 import ERC725, { ERC725JSONSchema } from "@erc725/erc725.js";
 import LSP3ProfileMetadataSchema from "@erc725/erc725.js/schemas/LSP3ProfileMetadata.json";
-import LSP6KeyManagerSchema from "@erc725/erc725.js/schemas/LSP6KeyManager.json";
+import LSP6KeyManagerSchema from "../schema/LSP6KeyManager.json";
 
 // Interfaces
 import {
@@ -146,7 +146,7 @@ export class UniversalProfile {
     functionName: string,
     ...params: any[]
   ) {
-    const lsp6KeyManagerAddress = (await this.erc725.getOwner()) as string;
+    const lsp6KeyManagerAddress = (await this.up.owner()) as string;
     await throwIfAddressIsNotALSP6KeyManager(lsp6KeyManagerAddress);
 
     await this.throwIfPermissionsAreNotSet(lsp6KeyManagerAddress);
