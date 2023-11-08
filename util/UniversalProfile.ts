@@ -165,9 +165,7 @@ export class UniversalProfile {
       "execute",
       [OPERATION_TYPES.CALL, contractAddress, 0, encodedInterfaceCall]
     );
-    const tx = await LSP6KeyManager.execute(encodedExecuteCall);
-    await tx.wait();
-    return tx;
+    return await LSP6KeyManager.execute(encodedExecuteCall);
   }
 
   public address() {

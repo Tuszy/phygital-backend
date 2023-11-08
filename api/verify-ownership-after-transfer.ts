@@ -38,7 +38,7 @@ export default async function (
 
     await phygitalAsset.validate();
 
-    await phygitalAsset.verifyOwnershipAfterTransfer(
+    const tx = await phygitalAsset.verifyOwnershipAfterTransfer(
       data.phygital_id,
       data.phygital_signature
     );
@@ -46,8 +46,7 @@ export default async function (
     response.setHeader("content-type", "application/json");
     response.status(200);
     response.json({
-      message: "Successfully verified phygital from collection",
-      ...data,
+      transactionHash: tx.hash,
     });
   } catch (e: any) {
     response.status(400);

@@ -38,13 +38,15 @@ export default async function (
 
     await phygitalAsset.validate();
 
-    await phygitalAsset.mint(data.phygital_id, data.phygital_signature);
+    const tx = await phygitalAsset.mint(
+      data.phygital_id,
+      data.phygital_signature
+    );
 
     response.setHeader("content-type", "application/json");
     response.status(200);
     response.json({
-      message: "Successfully minted phygital from collection",
-      ...data,
+      transactionHash: tx.hash,
     });
   } catch (e: any) {
     response.status(400);

@@ -32,19 +32,20 @@ export default async function (
     );
     await universalProfile.validate();
 
-    await createNewPhygitalAsset(
+    const tx = await createNewPhygitalAsset(
       universalProfile,
       data.name,
       data.symbol,
       data.phygital_collection,
       data.metadata
     );
+    const deploymentTx = tx.deploymentTransaction();
+    if (!deploymentTx?.hash) throw new Error("Deployment failed");
 
     response.setHeader("content-type", "application/json");
     response.status(200);
     response.json({
-      message: "Successfully created phygital",
-      ...data,
+      transactionHash: deploymentTx!.hash,
     });
   } catch (e: any) {
     response.status(400);

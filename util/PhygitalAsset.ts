@@ -148,7 +148,7 @@ export const createNewPhygitalAsset = async (
   symbol: string,
   phygitalCollection: string[],
   metadata: LSP4MetadataType
-): Promise<AddressLike> => {
+) => {
   const merkleTree = new MerkleTree(phygitalCollection, keccak256("bytes"));
   const merkleRoot = merkleTree.getHexRoot();
   const phygitalCollectionJSONURL = await uploadJSONToIPFSAndGetLSP2JSONURL(
@@ -169,7 +169,5 @@ export const createNewPhygitalAsset = async (
     universalProfile.address
   );
 
-  await deploymentTx.waitForDeployment();
-
-  return deploymentTx.target;
+  return deploymentTx;
 };
