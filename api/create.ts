@@ -5,9 +5,9 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { z } from "zod";
 import {
   zodAddressValidator,
+  zodLSP4MetadataJSONURLAsyncValidator,
   zodPhygitalCollectionValidator,
 } from "../util/input-validation";
-import { LSP4Metadata } from "../util/LSP4Metadata";
 
 // Helper
 import { UniversalProfile } from "../util/UniversalProfile";
@@ -18,7 +18,7 @@ const Schema = z.object({
   name: z.string(),
   symbol: z.string(),
   phygital_collection: zodPhygitalCollectionValidator(),
-  metadata: LSP4Metadata,
+  metadata: zodLSP4MetadataJSONURLAsyncValidator(),
 });
 
 export default async function (
@@ -26,7 +26,7 @@ export default async function (
   response: VercelResponse
 ) {
   try {
-    const data = Schema.parse(request.body);
+    const data = await Schema.parseAsync(request.body);
     const universalProfile = new UniversalProfile(
       data.universal_profile_address
     );
@@ -48,7 +48,8 @@ export default async function (
       transactionHash: deploymentTx!.hash,
     });
   } catch (e: any) {
+    response.setHeader("content-type", "application/json");
     response.status(400);
-    response.json(e?.message ?? e);
+    response.json({ error: e?.message ?? e });
   }
 }

@@ -147,7 +147,7 @@ export const createNewPhygitalAsset = async (
   name: string,
   symbol: string,
   phygitalCollection: string[],
-  metadata: LSP4MetadataType
+  metadata: string | LSP4MetadataType
 ) => {
   const merkleTree = new MerkleTree(phygitalCollection, keccak256("bytes"));
   const merkleRoot = merkleTree.getHexRoot();
@@ -155,10 +155,13 @@ export const createNewPhygitalAsset = async (
     `PhygitalAsset:Collection:${name}:${symbol}:${universalProfile.address}`,
     phygitalCollection
   );
-  const metadataJSONURL = await uploadJSONToIPFSAndGetLSP2JSONURL(
-    `PhygitalAsset:LSP4Metadata:${name}:${symbol}:${universalProfile.address}`,
-    metadata
-  );
+  const metadataJSONURL =
+    typeof metadata === "string"
+      ? metadata
+      : await uploadJSONToIPFSAndGetLSP2JSONURL(
+          `PhygitalAsset:LSP4Metadata:${name}:${symbol}:${universalProfile.address}`,
+          metadata
+        );
 
   const deploymentTx = await PhygitalAssetContractFactory.deploy(
     merkleRoot,

@@ -49,7 +49,8 @@ export default async function (
       transactionHash: tx.hash,
     });
   } catch (e: any) {
+    response.setHeader("content-type", "application/json");
     response.status(400);
-    response.json(e?.message ?? e);
+    response.json({ error: e?.message ?? e });
   }
 }

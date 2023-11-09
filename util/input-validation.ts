@@ -3,6 +3,8 @@ import { isAddress } from "ethers";
 
 // Validation
 import { z } from "zod";
+import { decodeLSP2JSONURL } from "./ipfs-client";
+import { LSP4Metadata } from "./LSP4Metadata";
 
 export const zodAddressValidator = () =>
   z
@@ -21,3 +23,13 @@ export const zodPhygitalCollectionValidator = () =>
 
 export const zodPhygitalSignatureValidator = () =>
   z.string().startsWith("0x").length(132); // 0x + 65bytes in hex
+
+export const zodLSP4MetadataJSONURLAsyncValidator = () =>
+  z
+    .string()
+    .startsWith("0x")
+    .refine(async (jsonUrl) => {
+      const metadata = decodeLSP2JSONURL(jsonUrl);
+      if (metadata === null) return false;
+      return LSP4Metadata.safeParse(metadata).success;
+    }, "Invalid LSP4 Metadata JSONURL");
