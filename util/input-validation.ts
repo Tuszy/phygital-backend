@@ -28,8 +28,11 @@ export const zodLSP4MetadataJSONURLAsyncValidator = () =>
   z
     .string()
     .startsWith("0x")
-    .refine(async (jsonUrl) => {
-      const metadata = decodeLSP2JSONURL(jsonUrl);
-      if (metadata === null) return false;
-      return LSP4Metadata.safeParse(metadata).success;
-    }, "Invalid LSP4 Metadata JSONURL");
+    .refine(
+      async (jsonUrl) => {
+        const metadata = decodeLSP2JSONURL(jsonUrl);
+        if (metadata === null) return false;
+        return LSP4Metadata.safeParse(metadata).success;
+      },
+      { message: "Invalid LSP4 Metadata JSONURL" }
+    );
