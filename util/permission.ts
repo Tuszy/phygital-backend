@@ -8,6 +8,6 @@ export default {
   ],
   values: [
     "0x0000000000000000000000000000000000000000000000000000000000000800",
-    "0x002000000010ffffffffffffffffffffffffffffffffffffffff5f5b600b1e3e3915002000000010ffffffffffffffffffffffffffffffffffffffff5f5b600b65090a4b",
+    "0x002000000002ffffffffffffffffffffffffffffffffffffffff5f5b600b1e3e3915002000000002ffffffffffffffffffffffffffffffffffffffff5f5b600b65090a4b",
   ],
 };
