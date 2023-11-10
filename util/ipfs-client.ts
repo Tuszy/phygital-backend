@@ -1,3 +1,6 @@
+// Load environment variables
+import "dotenv/config";
+
 // Crypto
 import {
   keccak256,
