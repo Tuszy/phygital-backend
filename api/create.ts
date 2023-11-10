@@ -39,6 +39,8 @@ export default async function (
       data.phygital_collection,
       data.metadata
     );
+    if (!tx) throw new Error("Deployment failed");
+
     const deploymentTx = tx.deploymentTransaction();
     if (!deploymentTx?.hash) throw new Error("Deployment failed");
 

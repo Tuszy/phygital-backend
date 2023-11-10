@@ -77,14 +77,10 @@ export class UniversalProfile {
       params
     );
 
-    console.log("Encoded function: ", encodedInterfaceCall);
-
     const encodedExecuteCall = LSP0ERC725AccountABIInterface.encodeFunctionData(
       "execute",
       [OPERATION_TYPES.CALL, contractAddress, 0, encodedInterfaceCall]
     );
-
-    console.log("Encoded execution function: ", encodedInterfaceCall);
 
     return await LSP6KeyManager.execute(encodedExecuteCall);
   }

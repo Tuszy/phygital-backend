@@ -13,7 +13,7 @@ import { INTERFACE_IDS } from "@lukso/lsp-smart-contracts";
 
 // Wallet
 import { controllerWallet } from "./wallet";
-import { interfaceIdOfPhygitalAsset } from "./PhygitalAsset";
+import { INTERFACE_ID_OF_PHYGITAL_ASSET } from "./PhygitalAsset";
 
 export function throwIfInvalidAddress(address: string) {
   if (!isAddress(address)) throw Error(`${address} is an invalid address`);
@@ -68,7 +68,7 @@ export async function throwIfAddressIsNotAPhygitalAsset(address: string) {
 
   try {
     const isPhygitalAsset = await phygitalAsset.supportsInterface(
-      interfaceIdOfPhygitalAsset
+      INTERFACE_ID_OF_PHYGITAL_ASSET
     );
     if (!isPhygitalAsset) throw new Error();
   } catch (e) {

@@ -28,9 +28,24 @@ import { keccak256 } from "./crypto";
 import { MerkleTree } from "merkletreejs";
 
 // Constants
-export const interfaceIdOfPhygitalAsset = "0x5f5b600b";
-export const phygitalAssetCollectionUriKey =
+export const INTERFACE_ID_OF_PHYGITAL_ASSET = "0x5f5b600b";
+export const PHYGITAL_ASSET_COLLECTION_URI_KEY =
   "0x4eff76d745d12fd5e5f7b38e8f396dd0d099124739e69a289ca1faa7ebc53768";
+export const ERRORS: Record<string, string> = {
+  "0xe73552b6": "Ownership verification failed. Please check the signature.",
+  "0xf7964284": "Phygital id is not part of the collection.",
+  "0x906fb8a7": "Phygital id has an unverified ownership.",
+  "0x56d5acaf": "Phygital has already a verified ownership.",
+};
+export const throwFormattedError = (e: any, fallback: string) => {
+  if ("data" in e && typeof e.data === "string" && e.data.length >= 10) {
+    const error = e.data.substring(0, 10) as string;
+    const errorMessage = ERRORS[error] ?? null;
+    if (error) throw new Error(errorMessage);
+  }
+
+  throw new Error(fallback + " - " + e);
+};
 export class PhygitalAsset {
   private phygitalAssetContract: Contract;
   constructor(
@@ -50,7 +65,7 @@ export class PhygitalAsset {
 
   private async getPhygitalCollectionOrThrow() {
     const jsonURL = await this.phygitalAssetContract.getData(
-      phygitalAssetCollectionUriKey
+      PHYGITAL_ASSET_COLLECTION_URI_KEY
     );
     const phygitalCollection = ((await decodeLSP2JSONURL(jsonURL)) ??
       []) as string[];
@@ -104,15 +119,6 @@ export class PhygitalAsset {
         phygitalCollection
       );
 
-    console.log(
-      this.phygitalAssetContractAddress,
-      "mint",
-      phygitalId,
-      phygitalIndex,
-      phygitalSignature,
-      merkleProofOfCollection
-    );
-
     try {
       return await this.universalProfile.executeCallThroughKeyManager(
         PhygitalAssetInterface,
@@ -124,9 +130,8 @@ export class PhygitalAsset {
         merkleProofOfCollection,
         false
       );
-    } catch (e) {
-      console.log(e);
-      throw new Error("Minting failed. Please provide a valid signature");
+    } catch (e: any) {
+      throwFormattedError(e, "Minting failed.");
     }
   }
 
@@ -134,26 +139,34 @@ export class PhygitalAsset {
     phygitalId: BytesLike,
     phygitalSignature: BytesLike
   ) {
-    return await this.universalProfile.executeCallThroughKeyManager(
-      PhygitalAssetInterface,
-      this.phygitalAssetContractAddress,
-      "verifyOwnershipAfterTransfer",
-      phygitalId,
-      phygitalSignature
-    );
+    try {
+      return await this.universalProfile.executeCallThroughKeyManager(
+        PhygitalAssetInterface,
+        this.phygitalAssetContractAddress,
+        "verifyOwnershipAfterTransfer",
+        phygitalId,
+        phygitalSignature
+      );
+    } catch (e: any) {
+      throwFormattedError(e, "Verification failed.");
+    }
   }
 
   public async transfer(newPhygitalOwner: AddressLike, phygitalId: BytesLike) {
-    return await this.universalProfile.executeCallThroughKeyManager(
-      PhygitalAssetInterface,
-      this.phygitalAssetContractAddress,
-      "transfer",
-      this.universalProfile.address,
-      newPhygitalOwner,
-      phygitalId,
-      false,
-      "0x"
-    );
+    try {
+      return await this.universalProfile.executeCallThroughKeyManager(
+        PhygitalAssetInterface,
+        this.phygitalAssetContractAddress,
+        "transfer",
+        this.universalProfile.address,
+        newPhygitalOwner,
+        phygitalId,
+        false,
+        "0x"
+      );
+    } catch (e: any) {
+      throwFormattedError(e, "Transfer failed.");
+    }
   }
 }
 
@@ -178,14 +191,18 @@ export const createNewPhygitalAsset = async (
           metadata
         );
 
-  const deploymentTx = await PhygitalAssetContractFactory.deploy(
-    merkleRoot,
-    phygitalCollectionJSONURL,
-    name,
-    symbol,
-    metadataJSONURL,
-    universalProfile.address
-  );
+  try {
+    const deploymentTx = await PhygitalAssetContractFactory.deploy(
+      merkleRoot,
+      phygitalCollectionJSONURL,
+      name,
+      symbol,
+      metadataJSONURL,
+      universalProfile.address
+    );
 
-  return deploymentTx;
+    return deploymentTx;
+  } catch (e: any) {
+    throwFormattedError(e, "Creation failed.");
+  }
 };
