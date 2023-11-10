@@ -5,6 +5,7 @@ import {
   Contract,
   SignatureLike,
   recoverAddress,
+  solidityPackedKeccak256,
 } from "ethers";
 
 // Types
@@ -186,10 +187,14 @@ export class PhygitalAsset {
     phygitalId: BytesLike,
     phygitalSignature: SignatureLike
   ) {
+    const nonce = await this.phygitalAssetContract.nonce(phygitalId);
     if (
       keccak256("address")(
         recoverAddress(
-          keccak256("address")(newPhygitalOwner),
+          solidityPackedKeccak256(
+            ["address", "uint256"],
+            [newPhygitalOwner, nonce]
+          ),
           phygitalSignature
         )
       ) !== phygitalId
