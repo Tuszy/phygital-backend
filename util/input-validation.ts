@@ -24,15 +24,31 @@ export const zodPhygitalCollectionValidator = () =>
 export const zodPhygitalSignatureValidator = () =>
   z.string().startsWith("0x").length(132); // 0x + 65bytes in hex
 
+export const zodBytes32Validator = () => z.string().startsWith("0x").length(66); // 0x + 32bytes in hex
+
 export const zodLSP4MetadataJSONURLAsyncValidator = () =>
   z
     .string()
     .startsWith("0x")
-    .refine(
-      async (jsonUrl) => {
-        const metadata = decodeLSP2JSONURL(jsonUrl);
-        if (metadata === null) return false;
-        return LSP4Metadata.safeParse(metadata).success;
-      },
-      { message: "Invalid LSP4 Metadata JSONURL" }
-    );
+    .superRefine(async (jsonUrl, ctx) => {
+      console.log(jsonUrl);
+      const metadata = await decodeLSP2JSONURL(jsonUrl);
+
+      if (metadata === null) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Invalid JSONURL",
+        });
+        return false;
+      }
+
+      console.log(metadata);
+      const result = LSP4Metadata.safeParse(metadata);
+      console.log(result);
+      if (!result.success) {
+        result.error.errors.forEach((err) => ctx.addIssue(err));
+        return false;
+      }
+
+      return true;
+    });

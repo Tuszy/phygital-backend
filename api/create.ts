@@ -15,8 +15,8 @@ import { createNewPhygitalAsset } from "../util/PhygitalAsset";
 
 const Schema = z.object({
   universal_profile_address: zodAddressValidator(),
-  name: z.string(),
-  symbol: z.string(),
+  name: z.string().min(1),
+  symbol: z.string().min(1),
   phygital_collection: zodPhygitalCollectionValidator(),
   metadata: zodLSP4MetadataJSONURLAsyncValidator(),
 });
