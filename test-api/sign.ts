@@ -15,7 +15,7 @@ const universalProfileAddress = process.argv[2];
 const phygitalIdIndex = parseInt(process.argv[3]);
 const nonceAsNumber = parseInt(process.argv[4]);
 const nonce =
-  !isNaN(nonceAsNumber) && nonceAsNumber > 0
+  !isNaN(nonceAsNumber) && nonceAsNumber >= 0
     ? zeroPadValue(toBeHex(nonceAsNumber), 32)
     : null;
 
