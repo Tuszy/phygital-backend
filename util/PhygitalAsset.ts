@@ -1,5 +1,11 @@
 // Crypto
-import { AddressLike, BytesLike, Contract } from "ethers";
+import {
+  AddressLike,
+  BytesLike,
+  Contract,
+  SignatureLike,
+  recoverAddress,
+} from "ethers";
 
 // Types
 import { LSP4MetadataType } from "./LSP4Metadata";
@@ -175,7 +181,20 @@ export class PhygitalAsset {
     }
   }
 
-  public async transfer(newPhygitalOwner: AddressLike, phygitalId: BytesLike) {
+  public async transfer(
+    newPhygitalOwner: AddressLike,
+    phygitalId: BytesLike,
+    phygitalSignature: SignatureLike
+  ) {
+    if (
+      keccak256("address")(
+        recoverAddress(
+          keccak256("address")(newPhygitalOwner),
+          phygitalSignature
+        )
+      ) !== phygitalId
+    )
+      throw "PhygitalAssetOwnershipVerificationFailed";
     try {
       return await this.universalProfile.executeCallThroughKeyManager(
         PhygitalAssetInterface,

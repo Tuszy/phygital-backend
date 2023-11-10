@@ -8,6 +8,7 @@ import express, { Request, Response } from "express";
 import mint from "../api/mint";
 import verifyOwnerShipAfterTransfer from "../api/verify-ownership-after-transfer";
 import create from "../api/create";
+import transfer from "../api/transfer";
 
 // Setup
 const app = express();
@@ -19,7 +20,10 @@ const wrapHandler =
   (handler: (request: VercelRequest, response: VercelResponse) => void) =>
   (req: Request, res: Response) =>
     handler(req as any, res as any);
+
 router.post("/mint", wrapHandler(mint));
+
+router.post("/transfer", wrapHandler(transfer));
 
 router.post(
   "/verify-ownership-after-transfer",
