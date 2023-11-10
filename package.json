@@ -5,7 +5,8 @@
   "description": "Backend for creating and minting phygitals in a user-friendly way by using an app specific controller key.",
   "scripts": {
     "start": "node index.js",
-    "start-test-server": "nodemon ./test-api/index.ts"
+    "start-test-server": "nodemon ./test-api/index.ts",
+    "sign": "ts-node ./test-api/sign.ts"
   },
   "keywords": [
     "lukso",

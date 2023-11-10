@@ -16,6 +16,9 @@ import { PhygitalAssetContractFactory } from "./contract-factories";
 // Validation
 import { throwIfAddressIsNotAPhygitalAsset } from "./contract-validation";
 
+// LSP Smart Contracts
+import { ErrorSelectors } from "@lukso/lsp-smart-contracts";
+
 // Helper
 import {
   decodeLSP2JSONURL,
@@ -32,17 +35,37 @@ export const INTERFACE_ID_OF_PHYGITAL_ASSET = "0x5f5b600b";
 export const PHYGITAL_ASSET_COLLECTION_URI_KEY =
   "0x4eff76d745d12fd5e5f7b38e8f396dd0d099124739e69a289ca1faa7ebc53768";
 export const ERRORS: Record<string, string> = {
-  "0xe73552b6": "Ownership verification failed. Please check the signature.",
-  "0xf7964284": "Phygital id is not part of the collection.",
-  "0x906fb8a7": "Phygital id has an unverified ownership.",
-  "0x56d5acaf": "Phygital has already a verified ownership.",
+  "0xe73552b6": "PhygitalAssetOwnershipVerificationFailed",
+  "0xf7964284": "PhygitalAssetIsNotPartOfCollection",
+  "0x906fb8a7": "PhygitalAssetHasAnUnverifiedOwnership",
+  "0x56d5acaf": "PhygitalAssetHasAlreadyAVerifiedOwnership",
+  ...Object.keys(ErrorSelectors.LSP8IdentifiableDigitalAsset).reduce(
+    (total, error) => ({
+      ...total,
+      // @ts-ignore
+      [error]: ErrorSelectors.LSP8IdentifiableDigitalAsset[error].name,
+    }),
+    {}
+  ),
+  ...Object.keys(ErrorSelectors.LSP8CompatibleERC721Mintable).reduce(
+    (total, error) => ({
+      ...total,
+      // @ts-ignore
+      [error]: ErrorSelectors.LSP8CompatibleERC721Mintable[error].name,
+    }),
+    {}
+  ),
 };
+
 export const throwFormattedError = (e: any, fallback: string) => {
   if ("data" in e && typeof e.data === "string" && e.data.length >= 10) {
     const error = e.data.substring(0, 10) as string;
     const errorMessage = ERRORS[error] ?? null;
-    if (error) throw new Error(errorMessage);
+    if (errorMessage) throw new Error(errorMessage);
   }
+
+  console.log(e);
+  console.log(ERRORS);
 
   throw new Error(fallback + " - " + e);
 };
