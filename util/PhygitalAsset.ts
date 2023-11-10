@@ -37,7 +37,7 @@ import { keccak256 } from "./crypto";
 import { MerkleTree } from "merkletreejs";
 
 // Constants
-export const INTERFACE_ID_OF_PHYGITAL_ASSET = "0x5f5b600b";
+export const INTERFACE_ID_OF_PHYGITAL_ASSET = "0xcf06c304";
 export const PHYGITAL_ASSET_COLLECTION_URI_KEY =
   "0x4eff76d745d12fd5e5f7b38e8f396dd0d099124739e69a289ca1faa7ebc53768";
 export const ERRORS: Record<string, string> = {

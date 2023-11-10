@@ -9,7 +9,7 @@ import {
 } from "ethers";
 import phygitalKeyPairs from "./phygital-key-pairs.json";
 
-// const phygitalAssetContractAddress = "0x3e0c0A775052d205bC7189BE61b0Aa8DEeC254e7";
+// const phygitalAssetContractAddress = "0xc60E674211BDE37f47Ff1AB6a6b536d9E322fC1F";
 
 const universalProfileAddress = process.argv[2];
 const phygitalIdIndex = parseInt(process.argv[3]);
@@ -43,7 +43,7 @@ if (
 console.log(
   "SOLIDITY PACKED",
   solidityPacked(
-    ["address", ...(nonce ? ["bytes32"] : [])],
+    ["address", ...(nonce ? ["uint256"] : [])],
     [universalProfileAddress, ...(nonce ? [nonce] : [])]
   )
 );
@@ -53,7 +53,7 @@ console.log(
   "Phygital Signature:",
   phygitalWallet.signingKey.sign(
     solidityPackedKeccak256(
-      ["address", ...(nonce ? ["bytes32"] : [])],
+      ["address", ...(nonce ? ["uint256"] : [])],
       [universalProfileAddress, ...(nonce ? [nonce] : [])]
     )
   ).serialized
