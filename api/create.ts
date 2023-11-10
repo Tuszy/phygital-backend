@@ -30,7 +30,7 @@ export default async function (
     const universalProfile = new UniversalProfile(
       data.universal_profile_address
     );
-    await universalProfile.validate();
+    await universalProfile.init();
 
     const tx = await createNewPhygitalAsset(
       universalProfile,
@@ -42,14 +42,14 @@ export default async function (
     const deploymentTx = tx.deploymentTransaction();
     if (!deploymentTx?.hash) throw new Error("Deployment failed");
 
-    response.setHeader("content-type", "application/json");
+    response.setHeader("Content-Type", "application/json");
     response.status(200);
     response.json({
       transactionHash: deploymentTx!.hash,
     });
   } catch (e: any) {
-    response.setHeader("content-type", "application/json");
+    response.setHeader("Content-Type", "application/json");
     response.status(400);
-    response.json({ error: e?.message ?? e });
+    response.json({ error: e?.errors ?? e?.message ?? e });
   }
 }

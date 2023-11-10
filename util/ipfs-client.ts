@@ -59,7 +59,7 @@ export const uploadJSONToIPFS = async (
     });
     if (!uploadResult?.IpfsHash) return null;
     return uploadResult.IpfsHash;
-  } catch (e) {
+  } catch (e: any) {
     throw Error(`Upload to IPFS failed (${e.message})`);
   }
 };

@@ -93,26 +93,41 @@ export class PhygitalAsset {
 
   public async mint(phygitalId: BytesLike, phygitalSignature: BytesLike) {
     const phygitalCollection = await this.getPhygitalCollectionOrThrow();
-    const phygitalIndex = this.getPhygitalIndexOrThrow(
+    const phygitalIndex = await this.getPhygitalIndexOrThrow(
       phygitalId as string,
       phygitalCollection
     );
 
-    const merkleProofOfCollection = this.getMerkleProofOfForPhygitalIdOrThrow(
-      phygitalId as string,
-      phygitalCollection
-    );
+    const merkleProofOfCollection =
+      await this.getMerkleProofOfForPhygitalIdOrThrow(
+        phygitalId as string,
+        phygitalCollection
+      );
 
-    return await this.universalProfile.executeCallThroughKeyManager(
-      PhygitalAssetInterface,
+    console.log(
       this.phygitalAssetContractAddress,
       "mint",
       phygitalId,
       phygitalIndex,
       phygitalSignature,
-      merkleProofOfCollection,
-      false
+      merkleProofOfCollection
     );
+
+    try {
+      return await this.universalProfile.executeCallThroughKeyManager(
+        PhygitalAssetInterface,
+        this.phygitalAssetContractAddress,
+        "mint",
+        phygitalId,
+        phygitalIndex,
+        phygitalSignature,
+        merkleProofOfCollection,
+        false
+      );
+    } catch (e) {
+      console.log(e);
+      throw new Error("Minting failed. Please provide a valid signature");
+    }
   }
 
   public async verifyOwnershipAfterTransfer(
@@ -133,7 +148,7 @@ export class PhygitalAsset {
       PhygitalAssetInterface,
       this.phygitalAssetContractAddress,
       "transfer",
-      this.universalProfile.address(),
+      this.universalProfile.address,
       newPhygitalOwner,
       phygitalId,
       false,

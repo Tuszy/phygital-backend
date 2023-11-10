@@ -29,7 +29,7 @@ export default async function (
     const universalProfile = new UniversalProfile(
       data.universal_profile_address
     );
-    await universalProfile.validate();
+    await universalProfile.init();
 
     const phygitalAsset = new PhygitalAsset(
       data.phygital_asset_contract_address,
@@ -43,14 +43,14 @@ export default async function (
       data.phygital_signature
     );
 
-    response.setHeader("content-type", "application/json");
+    response.setHeader("Content-Type", "application/json");
     response.status(200);
     response.json({
       transactionHash: tx.hash,
     });
   } catch (e: any) {
-    response.setHeader("content-type", "application/json");
+    response.setHeader("Content-Type", "application/json");
     response.status(400);
-    response.json({ error: e?.message ?? e });
+    response.json({ error: e?.errors ?? e?.message ?? e });
   }
 }
