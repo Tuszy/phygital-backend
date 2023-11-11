@@ -9,6 +9,8 @@ import {
   AbiCoder,
   getBytes,
   keccak256,
+  concat,
+  toUtf8Bytes,
 } from "ethers";
 
 // Types
@@ -38,6 +40,7 @@ import { controllerWallet } from "./wallet";
 
 // Merkle Tree
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
+import { KECCAK_256_HASH_FUNCTION } from "./crypto";
 
 // Constants
 export const INTERFACE_ID_OF_PHYGITAL_ASSET = "0xf6021190";
@@ -227,7 +230,8 @@ export const createNewPhygitalAsset = async (
   name: string,
   symbol: string,
   phygitalCollection: string[],
-  metadata: string | LSP4MetadataType
+  metadata: string | LSP4MetadataType,
+  baseURI: string
 ) => {
   const merkleTree = StandardMerkleTree.of(
     phygitalCollection.map((phygitalAddress) => [phygitalAddress]),
@@ -253,6 +257,7 @@ export const createNewPhygitalAsset = async (
       name,
       symbol,
       metadataJSONURL,
+      concat([KECCAK_256_HASH_FUNCTION, toUtf8Bytes(baseURI)]),
       universalProfile.address
     );
 

@@ -19,6 +19,7 @@ const Schema = z.object({
   symbol: z.string().min(1),
   phygital_collection: zodPhygitalCollectionValidator(),
   metadata: zodLSP4MetadataJSONURLAsyncValidator(),
+  baseURI: z.string().startsWith("ipfs://").endsWith("/"),
 });
 
 export default async function (
@@ -37,7 +38,8 @@ export default async function (
       data.name,
       data.symbol,
       data.phygital_collection,
-      data.metadata
+      data.metadata,
+      data.baseURI
     );
     if (!tx) throw new Error("Deployment failed");
 
