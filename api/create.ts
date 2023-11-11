@@ -19,7 +19,7 @@ const Schema = z.object({
   symbol: z.string().min(1),
   phygital_collection: zodPhygitalCollectionValidator(),
   metadata: zodLSP4MetadataJSONURLAsyncValidator(),
-  baseURI: z.string().startsWith("ipfs://").endsWith("/"),
+  base_uri: z.string().startsWith("ipfs://").endsWith("/"),
 });
 
 export default async function (
@@ -33,23 +33,20 @@ export default async function (
     );
     await universalProfile.init();
 
-    const tx = await createNewPhygitalAsset(
+    const contractAddress = await createNewPhygitalAsset(
       universalProfile,
       data.name,
       data.symbol,
       data.phygital_collection,
       data.metadata,
-      data.baseURI
+      data.base_uri
     );
-    if (!tx) throw new Error("Deployment failed");
-
-    const deploymentTx = tx.deploymentTransaction();
-    if (!deploymentTx?.hash) throw new Error("Deployment failed");
+    if (!contractAddress) throw new Error("Deployment failed");
 
     response.setHeader("Content-Type", "application/json");
     response.status(200);
     response.json({
-      transactionHash: deploymentTx!.hash,
+      contractAddress,
     });
   } catch (e: any) {
     response.setHeader("Content-Type", "application/json");

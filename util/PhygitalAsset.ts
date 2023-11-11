@@ -76,9 +76,6 @@ export const throwFormattedError = (e: any, fallback: string) => {
     if (errorMessage) throw new Error(errorMessage);
   }
 
-  console.log(e);
-  console.log(ERRORS);
-
   throw new Error(fallback + " - " + e);
 };
 export class PhygitalAsset {
@@ -261,7 +258,17 @@ export const createNewPhygitalAsset = async (
       universalProfile.address
     );
 
-    return deploymentTx;
+    const phygitalAssetContractAddress = (
+      await deploymentTx.waitForDeployment()
+    ).target.toString();
+
+    if (
+      !(await universalProfile.addIssuedAsset(phygitalAssetContractAddress))
+    ) {
+      throw new Error("Failed to add LSP12IssuedAsset to universal profile");
+    }
+
+    return phygitalAssetContractAddress;
   } catch (e: any) {
     throwFormattedError(e, "Creation failed.");
   }

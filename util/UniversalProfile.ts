@@ -1,14 +1,23 @@
 // Crypto
-import { Contract, Interface } from "ethers";
+import {
+  BytesLike,
+  Contract,
+  Interface,
+  concat,
+  toBeHex,
+  toBigInt,
+  zeroPadValue,
+} from "ethers";
 
 // Interfaces
 import {
   LSP0ERC725AccountABIInterface,
   LSP6KeyManagerInterface,
 } from "./Interfaces";
+import { INTERFACE_ID_OF_PHYGITAL_ASSET } from "./PhygitalAsset";
 
 // Constants
-import { OPERATION_TYPES } from "@lukso/lsp-smart-contracts";
+import { ERC725YDataKeys, OPERATION_TYPES } from "@lukso/lsp-smart-contracts";
 import permissionData from "./permission";
 
 // Wallet
@@ -19,6 +28,7 @@ import {
   throwIfAddressIsNotAERC725Account,
   throwIfAddressIsNotALSP6KeyManager,
 } from "./contract-validation";
+
 export class UniversalProfile {
   private _up: Contract;
   constructor(private universalProfileAddress: string) {
@@ -83,6 +93,49 @@ export class UniversalProfile {
     );
 
     return await LSP6KeyManager.execute(encodedExecuteCall);
+  }
+
+  async addIssuedAsset(phygitalAssetContractAddress: string) {
+    const lsp6KeyManagerAddress = (await this._up.owner()) as string;
+    await throwIfAddressIsNotALSP6KeyManager(lsp6KeyManagerAddress);
+
+    const LSP6KeyManager = new Contract(
+      lsp6KeyManagerAddress,
+      LSP6KeyManagerInterface,
+      controllerWallet
+    );
+
+    const arrayLength = await this._up.getData(
+      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length
+    );
+    const index = arrayLength !== "0x" ? toBigInt(arrayLength) : BigInt(0);
+
+    const keys: BytesLike[] = [
+      ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].length,
+      concat([
+        ERC725YDataKeys.LSP12["LSP12IssuedAssets[]"].index,
+        zeroPadValue(toBeHex(index), 16),
+      ]),
+      concat([
+        ERC725YDataKeys.LSP12.LSP12IssuedAssetsMap,
+        phygitalAssetContractAddress,
+      ]),
+    ];
+    const values: BytesLike[] = [
+      zeroPadValue(toBeHex(index + BigInt(1)), 16),
+      phygitalAssetContractAddress,
+      concat([
+        INTERFACE_ID_OF_PHYGITAL_ASSET,
+        zeroPadValue(toBeHex(index), 16),
+      ]),
+    ];
+
+    const encodedSetDataCall = LSP0ERC725AccountABIInterface.encodeFunctionData(
+      "setDataBatch",
+      [keys, values]
+    );
+
+    return await LSP6KeyManager.execute(encodedSetDataCall);
   }
 
   public get address() {

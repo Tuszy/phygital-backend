@@ -114,7 +114,7 @@ HTTP STATUS CODE 200 <br>
 Content-Type: application/json
 ```javascript
 { 
-    "transactionHash": string
+    "contractAddress": string
 }
 ```
 ##### Fail 

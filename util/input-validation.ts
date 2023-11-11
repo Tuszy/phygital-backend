@@ -28,7 +28,6 @@ export const zodLSP4MetadataJSONURLAsyncValidator = () =>
     .string()
     .startsWith("0x")
     .superRefine(async (jsonUrl, ctx) => {
-      console.log(jsonUrl);
       const metadata = await decodeLSP2JSONURL(jsonUrl);
 
       if (metadata === null) {
@@ -39,9 +38,7 @@ export const zodLSP4MetadataJSONURLAsyncValidator = () =>
         return false;
       }
 
-      console.log(metadata);
       const result = LSP4Metadata.safeParse(metadata);
-      console.log(result);
       if (!result.success) {
         result.error.errors.forEach((err) => ctx.addIssue(err));
         return false;
