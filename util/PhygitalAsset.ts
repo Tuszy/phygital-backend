@@ -38,12 +38,12 @@ import { keccak256 } from "./crypto";
 import { MerkleTree } from "merkletreejs";
 
 // Constants
-export const INTERFACE_ID_OF_PHYGITAL_ASSET = "0xcf06c304";
+export const INTERFACE_ID_OF_PHYGITAL_ASSET = "0x06d8902b";
 export const PHYGITAL_ASSET_COLLECTION_URI_KEY =
   "0x4eff76d745d12fd5e5f7b38e8f396dd0d099124739e69a289ca1faa7ebc53768";
 export const ERRORS: Record<string, string> = {
   "0xe73552b6": "PhygitalAssetOwnershipVerificationFailed",
-  "0x2e72eca5": "PhygitalAssetIsNotPartOfCollection",
+  "0x461e0d36": "PhygitalAssetIsNotPartOfCollection",
   "0x906fb8a7": "PhygitalAssetHasAnUnverifiedOwnership",
   "0x56d5acaf": "PhygitalAssetHasAlreadyAVerifiedOwnership",
   ...Object.keys(ErrorSelectors.LSP8IdentifiableDigitalAsset).reduce(
