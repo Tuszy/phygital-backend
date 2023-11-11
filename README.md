@@ -104,7 +104,8 @@ Content-Type: application/json
     "name": string,
     "symbol": string,
     "phygital_collection": string[],
-    "metadata": LSP2JSONURL
+    "metadata": LSP2JSONURL,
+    "base_uri": string
 }
 ```
 #### HTTP RESPONSE
