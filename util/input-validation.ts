@@ -15,11 +15,8 @@ export const zodAddressValidator = () =>
       message: `Invalid address`,
     });
 
-export const zodPhygitalIdValidator = () =>
-  z.string().startsWith("0x").length(66); // 0x + 32bytes in hex
-
 export const zodPhygitalCollectionValidator = () =>
-  z.array(zodPhygitalIdValidator()).min(1); // list of phygital ids
+  z.array(zodAddressValidator()).min(1); // list of phygital addresses
 
 export const zodPhygitalSignatureValidator = () =>
   z.string().startsWith("0x").length(132); // 0x + 65bytes in hex

@@ -6,6 +6,9 @@ import {
   SignatureLike,
   recoverAddress,
   solidityPackedKeccak256,
+  AbiCoder,
+  getBytes,
+  keccak256,
 } from "ethers";
 
 // Types
@@ -32,13 +35,12 @@ import {
   uploadJSONToIPFSAndGetLSP2JSONURL,
 } from "./ipfs-client";
 import { controllerWallet } from "./wallet";
-import { keccak256 } from "./crypto";
 
 // Merkle Tree
-import { MerkleTree } from "merkletreejs";
+import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 // Constants
-export const INTERFACE_ID_OF_PHYGITAL_ASSET = "0x06d8902b";
+export const INTERFACE_ID_OF_PHYGITAL_ASSET = "0xf6021190";
 export const PHYGITAL_ASSET_COLLECTION_URI_KEY =
   "0x4eff76d745d12fd5e5f7b38e8f396dd0d099124739e69a289ca1faa7ebc53768";
 export const ERRORS: Record<string, string> = {
@@ -102,50 +104,51 @@ export class PhygitalAsset {
 
     if (phygitalCollection.length === 0)
       throw Error(
-        "PhygitalAsset has an invalid collection (list of phygital ids)"
+        "PhygitalAsset has an invalid collection (list of phygital addresses)"
       );
 
     return phygitalCollection;
   }
 
-  private async getPhygitalIndexOrThrow(
-    phygitalId: string,
+  private async getMerkleProofOfForPhygitalAddressOrThrow(
+    phygitalAddress: string,
     phygitalCollection: string[]
   ) {
-    const phygitalIndex = phygitalCollection.indexOf(phygitalId);
-    if (phygitalIndex === -1)
-      throw Error("Phygital id is not part of the collection");
+    if (!phygitalAddress) throw Error(`PhygitalAssetIsNotPartOfCollection`);
 
-    return phygitalIndex;
-  }
+    const merkleTree = StandardMerkleTree.of(
+      phygitalCollection.map((phygitalAddress) => [phygitalAddress]),
+      ["address"]
+    );
 
-  private async getMerkleProofOfForPhygitalIdOrThrow(
-    phygitalId: string,
-    phygitalCollection: string[]
-  ) {
-    const merkleTree = new MerkleTree(phygitalCollection, keccak256("bytes"));
-    const merkleProof = merkleTree
-      .getProof(phygitalId)
-      .map((node) => node.data);
+    let phygitalIndex = -1;
+    for (const [index, data] of merkleTree.entries()) {
+      if (data[0] === phygitalAddress) {
+        phygitalIndex = index;
+        break;
+      }
+    }
+    if (phygitalIndex === -1) throw Error(`PhygitalAssetIsNotPartOfCollection`);
+
+    const merkleProof = merkleTree.getProof(phygitalIndex);
 
     if (merkleProof.length === 0)
       throw Error(
-        `Failed to calculate merkle proof for phygital id ${phygitalId}`
+        `Failed to calculate merkle proof for phygital address ${phygitalAddress}`
       );
 
     return merkleProof;
   }
 
-  public async mint(phygitalId: BytesLike, phygitalSignature: BytesLike) {
+  public async mint(
+    phygitalAddress: AddressLike,
+    phygitalSignature: BytesLike
+  ) {
     const phygitalCollection = await this.getPhygitalCollectionOrThrow();
-    const phygitalIndex = await this.getPhygitalIndexOrThrow(
-      phygitalId as string,
-      phygitalCollection
-    );
 
     const merkleProofOfCollection =
-      await this.getMerkleProofOfForPhygitalIdOrThrow(
-        phygitalId as string,
+      await this.getMerkleProofOfForPhygitalAddressOrThrow(
+        phygitalAddress as string,
         phygitalCollection
       );
 
@@ -154,8 +157,7 @@ export class PhygitalAsset {
         PhygitalAssetInterface,
         this.phygitalAssetContractAddress,
         "mint",
-        phygitalId,
-        phygitalIndex,
+        phygitalAddress,
         phygitalSignature,
         merkleProofOfCollection,
         false
@@ -166,7 +168,7 @@ export class PhygitalAsset {
   }
 
   public async verifyOwnershipAfterTransfer(
-    phygitalId: BytesLike,
+    phygitalAddress: AddressLike,
     phygitalSignature: BytesLike
   ) {
     try {
@@ -174,7 +176,7 @@ export class PhygitalAsset {
         PhygitalAssetInterface,
         this.phygitalAssetContractAddress,
         "verifyOwnershipAfterTransfer",
-        phygitalId,
+        phygitalAddress,
         phygitalSignature
       );
     } catch (e: any) {
@@ -184,20 +186,23 @@ export class PhygitalAsset {
 
   public async transfer(
     newPhygitalOwner: AddressLike,
-    phygitalId: BytesLike,
+    phygitalAddress: AddressLike,
     phygitalSignature: SignatureLike
   ) {
+    const phygitalId = keccak256(
+      getBytes(
+        AbiCoder.defaultAbiCoder().encode(["address"], [phygitalAddress])
+      )
+    );
     const nonce = await this.phygitalAssetContract.nonce(phygitalId);
     if (
-      keccak256("address")(
-        recoverAddress(
-          solidityPackedKeccak256(
-            ["address", "uint256"],
-            [newPhygitalOwner, nonce]
-          ),
-          phygitalSignature
-        )
-      ) !== phygitalId
+      recoverAddress(
+        solidityPackedKeccak256(
+          ["address", "uint256"],
+          [newPhygitalOwner, nonce]
+        ),
+        phygitalSignature
+      ) !== phygitalAddress
     )
       throw "PhygitalAssetOwnershipVerificationFailed";
     try {
@@ -224,8 +229,11 @@ export const createNewPhygitalAsset = async (
   phygitalCollection: string[],
   metadata: string | LSP4MetadataType
 ) => {
-  const merkleTree = new MerkleTree(phygitalCollection, keccak256("bytes"));
-  const merkleRoot = merkleTree.getHexRoot();
+  const merkleTree = StandardMerkleTree.of(
+    phygitalCollection.map((phygitalAddress) => [phygitalAddress]),
+    ["address"]
+  );
+  const merkleRoot = merkleTree.root;
   const phygitalCollectionJSONURL = await uploadJSONToIPFSAndGetLSP2JSONURL(
     `PhygitalAsset:Collection:${name}:${symbol}:${universalProfile.address}`,
     phygitalCollection

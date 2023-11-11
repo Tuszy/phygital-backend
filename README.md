@@ -14,7 +14,7 @@ Backend is used by the [Phygital App](https://github.com/Tuszy/phygital-app) to 
 { 
     "universal_profile_address": string,
     "phygital_asset_contract_address": string,
-    "phygital_id": string,
+    "phygital_address": string,
     "phygital_signature": string,
 }
 ```
@@ -44,7 +44,7 @@ Content-Type: application/json
     "universal_profile_address": string,
     "to_universal_profile_address": string,
     "phygital_asset_contract_address": string,
-    "phygital_id": string,
+    "phygital_address": string,
     "phygital_signature": string
 }
 ```
@@ -73,7 +73,7 @@ Content-Type: application/json
 { 
     "universal_profile_address": string,
     "phygital_asset_contract_address": string,
-    "phygital_id": string,
+    "phygital_address": string,
     "phygital_signature": string,
 }
 ```
