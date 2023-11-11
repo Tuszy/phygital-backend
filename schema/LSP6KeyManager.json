@@ -12,5 +12,12 @@
     "keyType": "MappingWithGrouping",
     "valueType": "(bytes4,address,bytes4,bytes4)[CompactBytesArray]",
     "valueContent": "(BitArray,Address,Bytes4,Bytes4)"
+  },
+  {
+    "name": "AddressPermissions:AllowedERC725YDataKeys:<address>",
+    "key": "0x4b80742de2bf866c29110000<address>",
+    "keyType": "MappingWithGrouping",
+    "valueType": "bytes[CompactBytesArray]",
+    "valueContent": "Bytes"
   }
 ]
