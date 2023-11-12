@@ -42,8 +42,8 @@ if (
 console.log(
   "SOLIDITY PACKED",
   solidityPacked(
-    ["address", ...(nonce ? ["uint256"] : [])],
-    [universalProfileAddress, ...(nonce ? [nonce] : [])]
+    ["address", ...(nonce !== null ? ["uint256"] : [])],
+    [universalProfileAddress, ...(nonce !== null ? [nonce] : [])]
   )
 );
 
@@ -52,8 +52,8 @@ console.log(
   "Phygital Signature:",
   phygitalWallet.signingKey.sign(
     solidityPackedKeccak256(
-      ["address", ...(nonce ? ["uint256"] : [])],
-      [universalProfileAddress, ...(nonce ? [nonce] : [])]
+      ["address", ...(nonce !== null ? ["uint256"] : [])],
+      [universalProfileAddress, ...(nonce !== null ? [nonce] : [])]
     )
   ).serialized
 );

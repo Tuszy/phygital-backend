@@ -30,15 +30,15 @@ if (
 console.log(
   "SOLIDITY PACKED",
   solidityPacked(
-    ["address", ...(nonce ? ["uint256"] : [])],
-    [universalProfileAddress, ...(nonce ? [nonce] : [])]
+    ["address", ...(nonce !== null ? ["uint256"] : [])],
+    [universalProfileAddress, ...(nonce !== null ? [nonce] : [])]
   )
 );
 
 console.log(
   "Keccak256:",
   solidityPackedKeccak256(
-    ["address", ...(nonce ? ["uint256"] : [])],
-    [universalProfileAddress, ...(nonce ? [nonce] : [])]
+    ["address", ...(nonce !== null ? ["uint256"] : [])],
+    [universalProfileAddress, ...(nonce !== null ? [nonce] : [])]
   )
 );
