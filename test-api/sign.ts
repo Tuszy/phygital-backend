@@ -3,7 +3,6 @@ import {
   Wallet,
   isAddress,
   solidityPacked,
-  hexlify,
   zeroPadValue,
   toBeHex,
 } from "ethers";

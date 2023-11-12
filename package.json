@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "start-test-server": "nodemon ./test-api/index.ts",
-    "sign": "ts-node ./test-api/sign.ts"
+    "sign": "ts-node ./test-api/sign.ts",
+    "keccak": "ts-node ./test-api/keccak.ts"
   },
   "keywords": [
     "lukso",
