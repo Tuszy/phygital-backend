@@ -153,7 +153,7 @@ export class PhygitalAsset {
       );
 
     try {
-      return await this.universalProfile.executeCallThroughKeyManager(
+      const tx = await this.universalProfile.executeCallThroughKeyManager(
         PhygitalAssetInterface,
         this.phygitalAssetContractAddress,
         "mint",
@@ -162,6 +162,8 @@ export class PhygitalAsset {
         merkleProofOfCollection,
         false
       );
+
+      return await controllerWallet.provider?.waitForTransaction(tx.hash);
     } catch (e: any) {
       throwFormattedError(e, "Minting failed.");
     }
@@ -172,13 +174,15 @@ export class PhygitalAsset {
     phygitalSignature: BytesLike
   ) {
     try {
-      return await this.universalProfile.executeCallThroughKeyManager(
+      const tx = await this.universalProfile.executeCallThroughKeyManager(
         PhygitalAssetInterface,
         this.phygitalAssetContractAddress,
         "verifyOwnershipAfterTransfer",
         phygitalAddress,
         phygitalSignature
       );
+
+      return await controllerWallet.provider?.waitForTransaction(tx.hash);
     } catch (e: any) {
       throwFormattedError(e, "Verification failed.");
     }
@@ -206,7 +210,7 @@ export class PhygitalAsset {
     )
       throw "PhygitalAssetOwnershipVerificationFailed";
     try {
-      return await this.universalProfile.executeCallThroughKeyManager(
+      const tx = await this.universalProfile.executeCallThroughKeyManager(
         PhygitalAssetInterface,
         this.phygitalAssetContractAddress,
         "transfer",
@@ -216,6 +220,8 @@ export class PhygitalAsset {
         false,
         "0x"
       );
+
+      return await controllerWallet.provider?.waitForTransaction(tx.hash);
     } catch (e: any) {
       throwFormattedError(e, "Transfer failed.");
     }

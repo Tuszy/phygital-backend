@@ -37,16 +37,17 @@ export default async function (
 
     await phygitalAsset.validate();
 
-    const tx = await phygitalAsset.mint(
+    const receipt = await phygitalAsset.mint(
       data.phygital_address,
       data.phygital_signature
     );
 
+    if (receipt == null)
+      throw new Error("Waiting for transaction to complete failed");
+
     response.setHeader("Content-Type", "application/json");
     response.status(200);
-    response.json({
-      transactionHash: tx.hash,
-    });
+    response.json(receipt);
   } catch (e: any) {
     response.setHeader("Content-Type", "application/json");
     response.status(400);
