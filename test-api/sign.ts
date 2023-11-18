@@ -8,7 +8,7 @@ import {
 } from "ethers";
 import phygitalKeyPairs from "./phygital-key-pairs.json";
 
-// const phygitalAssetContractAddress = "0x56f6FCC1CAB2A5589F2C5Caf5583A54f910b3Ed4";
+// const phygitalAssetContractAddress = "0x61b882aa41B88DD6e9b196aF55E0A48889f23cF5";
 
 const universalProfileAddress = process.argv[2];
 const phygitalIdIndex = parseInt(process.argv[3]);
