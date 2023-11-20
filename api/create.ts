@@ -19,7 +19,7 @@ const Schema = z.object({
   symbol: z.string().min(1),
   phygital_collection: zodPhygitalCollectionValidator(),
   metadata: zodLSP4MetadataJSONURLAsyncValidator(),
-  base_uri: z.string().startsWith("ipfs://").endsWith("/"),
+  base_uri: z.string().startsWith("ipfs://"),
 });
 
 export default async function (
