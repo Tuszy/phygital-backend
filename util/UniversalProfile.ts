@@ -1,3 +1,4 @@
+import { INTERFACE_IDS } from "@lukso/lsp-smart-contracts";
 // Crypto
 import {
   BytesLike,
@@ -125,7 +126,7 @@ export class UniversalProfile {
       zeroPadValue(toBeHex(index + BigInt(1)), 16),
       phygitalAssetContractAddress,
       concat([
-        INTERFACE_ID_OF_PHYGITAL_ASSET,
+        INTERFACE_IDS.LSP8IdentifiableDigitalAsset,
         zeroPadValue(toBeHex(index), 16),
       ]),
     ];
