@@ -132,7 +132,7 @@ export class PhygitalAsset {
 
     const merkleProof = merkleTree.getProof(phygitalIndex);
 
-    if (merkleProof.length === 0)
+    if (phygitalCollection.length > 1 && merkleProof.length === 0)
       throw Error(
         `Failed to calculate merkle proof for phygital address ${phygitalAddress}`
       );
