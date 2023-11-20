@@ -33,7 +33,7 @@ const LSP4MetadataLink = z.object({
 export const LSP4Metadata = z.object({
   LSP4Metadata: z.object({
     description: z.string().min(1),
-    links: z.array(LSP4MetadataLink).min(1),
+    links: z.array(LSP4MetadataLink).optional(),
     icon: z.array(LSP4MetadataImage).min(1),
     images: z.array(z.array(LSP4MetadataImage)).min(1),
     assets: z.array(LSP4MetadataAsset).optional(),
