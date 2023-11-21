@@ -5,7 +5,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { z } from "zod";
 import {
   zodAddressValidator,
-  zodPhygitalSignatureValidator,
+  zodSignatureValidator,
 } from "../util/input-validation";
 
 // Helper
@@ -17,7 +17,7 @@ const Schema = z.object({
   to_universal_profile_address: zodAddressValidator(),
   phygital_asset_contract_address: zodAddressValidator(),
   phygital_address: zodAddressValidator(),
-  phygital_signature: zodPhygitalSignatureValidator(),
+  phygital_signature: zodSignatureValidator(),
 });
 
 export default async function (
@@ -30,6 +30,9 @@ export default async function (
       data.universal_profile_address
     );
     await universalProfile.init();
+    universalProfile.verifyAuthenticationToken(
+      request.headers.authorization?.split(" ")[1]
+    );
 
     const phygitalAsset = new PhygitalAsset(
       data.phygital_asset_contract_address,

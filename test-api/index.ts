@@ -5,6 +5,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import express, { Request, Response } from "express";
 
 // Endpoints
+import login from "../api/login";
 import mint from "../api/mint";
 import verifyOwnerShipAfterTransfer from "../api/verify-ownership-after-transfer";
 import create from "../api/create";
@@ -20,6 +21,8 @@ const wrapHandler =
   (handler: (request: VercelRequest, response: VercelResponse) => void) =>
   (req: Request, res: Response) =>
     handler(req as any, res as any);
+
+router.post("/login", wrapHandler(login));
 
 router.post("/mint", wrapHandler(mint));
 

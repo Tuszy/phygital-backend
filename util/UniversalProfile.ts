@@ -1,4 +1,6 @@
-import { INTERFACE_IDS } from "@lukso/lsp-smart-contracts";
+// JWT
+import jwt from "jsonwebtoken";
+
 // Crypto
 import {
   BytesLike,
@@ -8,6 +10,7 @@ import {
   toBeHex,
   toBigInt,
   zeroPadValue,
+  recoverAddress,
 } from "ethers";
 
 // Interfaces
@@ -15,7 +18,7 @@ import {
   LSP0ERC725AccountABIInterface,
   LSP6KeyManagerInterface,
 } from "./Interfaces";
-import { INTERFACE_ID_OF_PHYGITAL_ASSET } from "./PhygitalAsset";
+import { INTERFACE_IDS } from "@lukso/lsp-smart-contracts";
 
 // Constants
 import { ERC725YDataKeys, OPERATION_TYPES } from "@lukso/lsp-smart-contracts";
@@ -50,6 +53,33 @@ export class UniversalProfile {
   public async init() {
     await throwIfAddressIsNotAERC725Account(this.universalProfileAddress);
     await this.throwIfPermissionsAreNotSet();
+  }
+
+  public async login(hash: string, signature: string) {
+    if (!(await this._up.isValidSignature(hash, signature)))
+      throw "Login failed";
+
+    const privateKey: string = process.env.PRIVATE_KEY!;
+    const token = jwt.sign(
+      { address: this.universalProfileAddress, timestamp: Date.now() },
+      privateKey
+    );
+
+    return token;
+  }
+
+  public verifyAuthenticationToken(token?: string) {
+    if (!token) throw "Invalid authentication";
+    try {
+      const privateKey: string = process.env.PRIVATE_KEY!;
+      const tokenObject: any = jwt.verify(token, privateKey);
+      return (
+        Boolean(this.universalProfileAddress) &&
+        tokenObject.address === this.universalProfileAddress
+      );
+    } catch (e) {
+      throw "Invalid authentication";
+    }
   }
 
   public async hasNecessaryPermissions() {

@@ -18,8 +18,10 @@ export const zodAddressValidator = () =>
 export const zodPhygitalCollectionValidator = () =>
   z.array(zodAddressValidator()).min(1); // list of phygital addresses
 
-export const zodPhygitalSignatureValidator = () =>
+export const zodSignatureValidator = () =>
   z.string().startsWith("0x").length(132); // 0x + 65bytes in hex
+
+export const zodHashValidator = () => z.string().startsWith("0x").length(66); // 0x + 32bytes in hex
 
 export const zodBytes32Validator = () => z.string().startsWith("0x").length(66); // 0x + 32bytes in hex
 

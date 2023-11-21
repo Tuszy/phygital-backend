@@ -5,21 +5,17 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { z } from "zod";
 import {
   zodAddressValidator,
-  zodLSP4MetadataJSONURLAsyncValidator,
-  zodPhygitalCollectionValidator,
+  zodSignatureValidator,
+  zodHashValidator,
 } from "../util/input-validation";
 
 // Helper
 import { UniversalProfile } from "../util/UniversalProfile";
-import { createNewPhygitalAsset } from "../util/PhygitalAsset";
 
 const Schema = z.object({
   universal_profile_address: zodAddressValidator(),
-  name: z.string().min(1),
-  symbol: z.string().min(1),
-  phygital_collection: zodPhygitalCollectionValidator(),
-  metadata: zodLSP4MetadataJSONURLAsyncValidator(),
-  base_uri: z.string().startsWith("ipfs://"),
+  signature: zodSignatureValidator(),
+  hash: zodHashValidator(),
 });
 
 export default async function (
@@ -32,25 +28,12 @@ export default async function (
       data.universal_profile_address
     );
     await universalProfile.init();
-    universalProfile.verifyAuthenticationToken(
-      request.headers.authorization?.split(" ")[1]
-    );
 
-    const contractAddress = await createNewPhygitalAsset(
-      universalProfile,
-      data.name,
-      data.symbol,
-      data.phygital_collection,
-      data.metadata,
-      data.base_uri
-    );
-    if (!contractAddress) throw new Error("Deployment failed");
+    const token = universalProfile.login(data.hash, data.signature);
 
     response.setHeader("Content-Type", "application/json");
     response.status(200);
-    response.json({
-      contractAddress,
-    });
+    response.json(token);
   } catch (e: any) {
     response.setHeader("Content-Type", "application/json");
     response.status(400);
