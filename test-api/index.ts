@@ -9,6 +9,7 @@ import cors from "cors";
 
 // Endpoints
 import login from "../api/login";
+import verifyToken from "../api/verify-token";
 import mint from "../api/mint";
 import verifyOwnerShipAfterTransfer from "../api/verify-ownership-after-transfer";
 import create from "../api/create";
@@ -27,6 +28,8 @@ const wrapHandler =
     handler(req as any, res as any);
 
 router.post("/login", wrapHandler(login));
+
+router.post("/verify-token", wrapHandler(verifyToken));
 
 router.post("/mint", wrapHandler(mint));
 
