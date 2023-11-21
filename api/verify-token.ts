@@ -22,9 +22,18 @@ export default async function (
       data.universal_profile_address
     );
     await universalProfile.init();
-    universalProfile.verifyAuthenticationToken(
-      request.headers.authorization?.split(" ")[1]
-    );
+    try {
+      universalProfile.verifyAuthenticationToken(
+        request.headers.authorization?.split(" ")[1]
+      );
+    } catch (e) {
+      response.setHeader("Content-Type", "application/json");
+      response.status(401);
+      response.json({
+        error: "Authentication session expired",
+      });
+      return;
+    }
 
     response.setHeader("Content-Type", "application/json");
     response.status(200);

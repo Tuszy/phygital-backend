@@ -61,8 +61,9 @@ export class UniversalProfile {
 
     const privateKey: string = process.env.PRIVATE_KEY!;
     const token = jwt.sign(
-      { address: this.universalProfileAddress, timestamp: Date.now() },
-      privateKey
+      { address: this.universalProfileAddress },
+      privateKey,
+      { expiresIn: 60 * 60 * 24 } // 1 day
     );
 
     return token;
