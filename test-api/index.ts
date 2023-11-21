@@ -4,6 +4,9 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 // Express Server
 import express, { Request, Response } from "express";
 
+// Cors
+import cors from "cors";
+
 // Endpoints
 import login from "../api/login";
 import mint from "../api/mint";
@@ -13,6 +16,7 @@ import transfer from "../api/transfer";
 
 // Setup
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const router = express.Router();
