@@ -29,11 +29,11 @@ export default async function (
     );
     await universalProfile.init();
 
-    const token = universalProfile.login(data.hash, data.signature);
+    const token = await universalProfile.login(data.hash, data.signature);
 
     response.setHeader("Content-Type", "application/json");
     response.status(200);
-    response.json(token);
+    response.json({ token });
   } catch (e: any) {
     response.setHeader("Content-Type", "application/json");
     response.status(400);
