@@ -41,6 +41,10 @@ import {
   throwIfAddressIsNotALSP6KeyManager,
 } from "./contract-validation";
 
+// ERC725
+import ERC725, { ERC725JSONSchema } from "@erc725/erc725.js";
+import LSP6KeyManagerSchema from "../schema/LSP6KeyManager.json";
+
 export class UniversalProfile {
   private _up: Contract;
   constructor(private universalProfileAddress: string) {
@@ -94,8 +98,13 @@ export class UniversalProfile {
       const data = await this._up["getDataBatch(bytes32[])"](
         permissionData.keys
       );
+
+      const KeyManagerERC725 = new ERC725(
+        LSP6KeyManagerSchema as ERC725JSONSchema[]
+      );
+
       return (
-        permissionData.values[0] === data[0] &&
+        KeyManagerERC725.checkPermissions(permissionData.values[0], data[0]) &&
         permissionData.values[1] === data[1]
       );
     } catch (e) {
