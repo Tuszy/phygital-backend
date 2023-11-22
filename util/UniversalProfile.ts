@@ -10,7 +10,7 @@ import {
   toBeHex,
   toBigInt,
   zeroPadValue,
-  recoverAddress,
+  solidityPacked,
 } from "ethers";
 
 // Interfaces
@@ -25,7 +25,15 @@ import { ERC725YDataKeys, OPERATION_TYPES } from "@lukso/lsp-smart-contracts";
 import permissionData from "./permission";
 
 // Wallet
-import { controllerWallet } from "./wallet";
+import {
+  controllerWallet,
+  CONTROLLER_PUBLIC_KEY,
+  CONTROLLER_PRIVATE_KEY,
+  CHAIN_ID,
+} from "./wallet";
+
+// Signer
+import { EIP191Signer } from "@lukso/eip191-signer.js";
 
 // Validation
 import {
@@ -59,10 +67,9 @@ export class UniversalProfile {
     if (!(await this._up.isValidSignature(hash, signature)))
       throw "Login failed";
 
-    const privateKey: string = process.env.PRIVATE_KEY!;
     const token = jwt.sign(
       { address: this.universalProfileAddress },
-      privateKey,
+      CONTROLLER_PRIVATE_KEY,
       { expiresIn: 60 * 60 * 24 } // 1 day
     );
 
@@ -72,8 +79,7 @@ export class UniversalProfile {
   public verifyAuthenticationToken(token?: string) {
     if (!token) throw "Invalid authentication";
     try {
-      const privateKey: string = process.env.PRIVATE_KEY!;
-      const tokenObject: any = jwt.verify(token, privateKey);
+      const tokenObject: any = jwt.verify(token, CONTROLLER_PRIVATE_KEY);
       return (
         Boolean(this.universalProfileAddress) &&
         tokenObject.address === this.universalProfileAddress
@@ -124,7 +130,32 @@ export class UniversalProfile {
       [OPERATION_TYPES.CALL, contractAddress, 0, encodedInterfaceCall]
     );
 
-    return await LSP6KeyManager.execute(encodedExecuteCall);
+    const nonce = await LSP6KeyManager.getNonce(CONTROLLER_PUBLIC_KEY, 0);
+    let encodedMessage = solidityPacked(
+      ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+      [
+        25, // LSP25_VERSION
+        CHAIN_ID,
+        nonce,
+        0,
+        0,
+        encodedExecuteCall,
+      ]
+    );
+
+    const eip191Signer = new EIP191Signer();
+    const { signature } = await eip191Signer.signDataWithIntendedValidator(
+      lsp6KeyManagerAddress,
+      encodedMessage,
+      CONTROLLER_PRIVATE_KEY
+    );
+
+    return await LSP6KeyManager.executeRelayCall(
+      signature,
+      nonce,
+      0,
+      encodedExecuteCall
+    );
   }
 
   async addIssuedAsset(phygitalAssetContractAddress: string) {
@@ -167,7 +198,32 @@ export class UniversalProfile {
       [keys, values]
     );
 
-    return await LSP6KeyManager.execute(encodedSetDataCall);
+    const nonce = await LSP6KeyManager.getNonce(CONTROLLER_PUBLIC_KEY, 0);
+    let encodedMessage = solidityPacked(
+      ["uint256", "uint256", "uint256", "uint256", "uint256", "bytes"],
+      [
+        25, // LSP25_VERSION
+        CHAIN_ID,
+        nonce,
+        0,
+        0,
+        encodedSetDataCall,
+      ]
+    );
+
+    const eip191Signer = new EIP191Signer();
+    const { signature } = await eip191Signer.signDataWithIntendedValidator(
+      lsp6KeyManagerAddress,
+      encodedMessage,
+      CONTROLLER_PRIVATE_KEY
+    );
+
+    return await LSP6KeyManager.executeRelayCall(
+      signature,
+      nonce,
+      0,
+      encodedSetDataCall
+    );
   }
 
   public get address() {
