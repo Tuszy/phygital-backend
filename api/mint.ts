@@ -23,6 +23,11 @@ export default async function (
   request: VercelRequest,
   response: VercelResponse
 ) {
+  if (request.method === "OPTIONS") {
+    response.status(200).end();
+    return;
+  }
+
   try {
     const data = Schema.parse(request.body);
     const universalProfile = new UniversalProfile(
