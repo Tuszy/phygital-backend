@@ -11,9 +11,9 @@ import {
 // Helper
 import { UniversalProfile } from "../util/UniversalProfile";
 import { PhygitalAsset } from "../util/PhygitalAsset";
+import { getUniversalProfileFromAuthSession } from "../util/auth";
 
 const Schema = z.object({
-  universal_profile_address: zodAddressValidator(),
   to_universal_profile_address: zodAddressValidator(),
   phygital_asset_contract_address: zodAddressValidator(),
   phygital_address: zodAddressValidator(),
@@ -27,18 +27,18 @@ export default async function (
   if (request.method === "OPTIONS") {
     response.status(200).end();
     return;
+  } else if (request.method !== "POST") {
+    response.status(405).end();
+    return;
   }
 
   try {
     const data = Schema.parse(request.body);
-    const universalProfile = new UniversalProfile(
-      data.universal_profile_address
-    );
-    await universalProfile.init();
+
+    let universalProfile: null | UniversalProfile = null;
     try {
-      universalProfile.verifyAuthenticationToken(
-        request.headers.authorization?.split(" ")[1]
-      );
+      const token = request.headers.authorization?.split(" ")[1];
+      universalProfile = await getUniversalProfileFromAuthSession(token);
     } catch (e) {
       response.setHeader("Content-Type", "application/json");
       response.status(401);

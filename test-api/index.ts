@@ -29,7 +29,7 @@ const wrapHandler =
 
 router.post("/login", wrapHandler(login));
 
-router.post("/verify-token", wrapHandler(verifyToken));
+router.get("/verify-token", wrapHandler(verifyToken));
 
 router.post("/mint", wrapHandler(mint));
 

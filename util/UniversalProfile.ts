@@ -80,19 +80,6 @@ export class UniversalProfile {
     return token;
   }
 
-  public verifyAuthenticationToken(token?: string) {
-    if (!token) throw "Invalid authentication";
-    try {
-      const tokenObject: any = jwt.verify(token, CONTROLLER_PRIVATE_KEY);
-      return (
-        Boolean(this.universalProfileAddress) &&
-        tokenObject.address === this.universalProfileAddress
-      );
-    } catch (e) {
-      throw "Invalid authentication";
-    }
-  }
-
   public async hasNecessaryPermissions() {
     try {
       const data = await this._up["getDataBatch(bytes32[])"](

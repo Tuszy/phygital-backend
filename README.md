@@ -15,11 +15,64 @@ Furthermore the [Frontend](https://github.com/Tuszy/phygital-frontend) must logi
 
 # Endpoints
 
-## /api/mint
+---
+## /api/login
 #### HTTP POST REQUEST
 ```javascript
 { 
     "universal_profile_address": string,
+    "signature": string,
+    "hash": string
+}
+```
+#### HTTP RESPONSE
+##### Success
+###### HTTP STATUS CODE 200 - Content-Type: application/json
+```javascript
+{
+   "token": string
+}
+```
+##### Fail 
+###### HTTP STATUS CODE 400 - Content-Type: application/json
+```javascript
+{ 
+    "error": string | array
+}
+```
+---
+## /api/verify-token
+#### HTTP GET REQUEST WITH JWT (includes universal profile address)
+```
+NO CONTENT BODY
+```
+#### HTTP RESPONSE
+##### Success
+###### HTTP STATUS CODE 200 - Content-Type: application/json
+```javascript
+{
+   "message": "success"
+}
+```
+##### Fail 
+###### HTTP STATUS CODE 400 - Content-Type: application/json
+```javascript
+{ 
+    "error": string | array
+}
+```
+##### Unauthenticated / Session expired 
+###### HTTP STATUS CODE 401 - Content-Type: application/json
+```javascript
+{ 
+    "error": "Authentication session expired"
+}
+```
+
+## /api/mint
+#### HTTP POST REQUEST WITH JWT (includes universal profile address)
+```javascript
+{ 
     "phygital_asset_contract_address": string,
     "phygital_address": string,
     "phygital_signature": string,
@@ -50,10 +103,9 @@ Furthermore the [Frontend](https://github.com/Tuszy/phygital-frontend) must logi
 
 ---
 ## /api/transfer
-#### HTTP POST REQUEST
+#### HTTP POST REQUEST WITH JWT (includes universal profile address)
 ```javascript
 { 
-    "universal_profile_address": string,
     "to_universal_profile_address": string,
     "phygital_asset_contract_address": string,
     "phygital_address": string,
@@ -85,10 +137,9 @@ Furthermore the [Frontend](https://github.com/Tuszy/phygital-frontend) must logi
 
 ---
 ## /api/verify-ownership-after-transfer
-#### HTTP POST REQUEST
+#### HTTP POST REQUEST WITH JWT (includes universal profile address)
 ```javascript
 { 
-    "universal_profile_address": string,
     "phygital_asset_contract_address": string,
     "phygital_address": string,
     "phygital_signature": string,
@@ -119,10 +170,9 @@ Furthermore the [Frontend](https://github.com/Tuszy/phygital-frontend) must logi
 
 ---
 ## /api/create
-#### HTTP POST REQUEST
+#### HTTP POST REQUEST WITH JWT (includes universal profile address)
 ```javascript
 { 
-    "universal_profile_address": string,
     "name": string,
     "symbol": string,
     "phygital_collection": string[],
@@ -136,66 +186,6 @@ Furthermore the [Frontend](https://github.com/Tuszy/phygital-frontend) must logi
 ```javascript
 { 
     "contractAddress": string
-}
-```
-##### Fail 
-###### HTTP STATUS CODE 400 - Content-Type: application/json
-```javascript
-{ 
-    "error": string | array
-}
-```
-##### Unauthenticated / Session expired 
-###### HTTP STATUS CODE 401 - Content-Type: application/json
-```javascript
-{ 
-    "error": "Authentication session expired"
-}
-```
-
-
-
-
-
----
-## /api/login
-#### HTTP POST REQUEST
-```javascript
-{ 
-    "universal_profile_address": string,
-    "signature": string,
-    "hash": string
-}
-```
-#### HTTP RESPONSE
-##### Success
-###### HTTP STATUS CODE 200 - Content-Type: application/json
-```javascript
-{
-   "token": string
-}
-```
-##### Fail 
-###### HTTP STATUS CODE 400 - Content-Type: application/json
-```javascript
-{ 
-    "error": string | array
-}
-```
----
-## /api/verify-token
-#### HTTP POST REQUEST
-```javascript
-{ 
-    "universal_profile_address": string
-}
-```
-#### HTTP RESPONSE
-##### Success
-###### HTTP STATUS CODE 200 - Content-Type: application/json
-```javascript
-{
-   "message": "success"
 }
 ```
 ##### Fail 

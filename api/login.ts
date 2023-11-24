@@ -25,6 +25,9 @@ export default async function (
   if (request.method === "OPTIONS") {
     response.status(200).end();
     return;
+  } else if (request.method !== "POST") {
+    response.status(405).end();
+    return;
   }
 
   try {

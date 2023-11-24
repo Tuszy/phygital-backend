@@ -4,7 +4,6 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 // Validation
 import { z } from "zod";
 import {
-  zodAddressValidator,
   zodLSP4MetadataJSONURLAsyncValidator,
   zodPhygitalCollectionValidator,
 } from "../util/input-validation";
@@ -12,9 +11,9 @@ import {
 // Helper
 import { UniversalProfile } from "../util/UniversalProfile";
 import { createNewPhygitalAsset } from "../util/PhygitalAsset";
+import { getUniversalProfileFromAuthSession } from "../util/auth";
 
 const Schema = z.object({
-  universal_profile_address: zodAddressValidator(),
   name: z.string().min(1),
   symbol: z.string().min(1),
   phygital_collection: zodPhygitalCollectionValidator(),
@@ -29,18 +28,18 @@ export default async function (
   if (request.method === "OPTIONS") {
     response.status(200).end();
     return;
+  } else if (request.method !== "POST") {
+    response.status(405).end();
+    return;
   }
 
   try {
     const data = await Schema.parseAsync(request.body);
-    const universalProfile = new UniversalProfile(
-      data.universal_profile_address
-    );
-    await universalProfile.init();
+
+    let universalProfile: null | UniversalProfile = null;
     try {
-      universalProfile.verifyAuthenticationToken(
-        request.headers.authorization?.split(" ")[1]
-      );
+      const token = request.headers.authorization?.split(" ")[1];
+      universalProfile = await getUniversalProfileFromAuthSession(token);
     } catch (e) {
       response.setHeader("Content-Type", "application/json");
       response.status(401);
