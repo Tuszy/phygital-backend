@@ -1,0 +1,63 @@
+title Login with Universal Profile
+
+participant App
+actor User
+participant Frontend
+participant Backend
+
+User->Frontend: Press [Create App Login QR Code] button
+activate Frontend
+activate User
+Frontend-->User: Open UP extension\n with login request
+deactivate User
+deactivate Frontend
+User->Frontend: Login with UP extension\n(Sign SIWE message)
+activate Frontend
+activate User
+Frontend->Backend:Call /api/login with UP address,\nmessage hash and signature
+activate Frontend
+activate Backend
+Backend->Backend: Validate login\ndata
+Backend->Backend: Create JWT with\n 24h long validity
+Backend-->Frontend: Return JWT
+deactivate Backend
+deactivate Frontend
+Frontend-->User: Show 'App Login QR Code'
+deactivate Frontend
+deactivate User
+User->App: Press [Login with Universal Profile] button
+activate User
+activate App
+App-->User: Open QR Code Scanner
+deactivate User
+deactivate App
+User->App: Scan 'App Login QR Code'
+activate User
+activate App
+App->Frontend: Scan 'App Login QR Code'
+activate App
+activate Frontend
+Frontend-->App: Universal Profile address and JWT
+deactivate Frontend
+deactivate App
+App->App: Validate QR Code
+App->App: Save Universal Profile\naddress and JWT locally
+App->App: Log user in
+App-->User: Show logged-in screen
+deactivate User
+deactivate App
+User->App: Mint / Transfer / Verify Ownership after Transfer / Create
+activate User
+activate App
+App->Backend: Send authenticated requests with JWT: /api/verify-token, /api/mint, /api/transfer, /api/verify-ownership-after-transfer and /api/create
+activate App
+activate Backend
+Backend->Backend: Validate JWT
+Backend->Backend: Execute relay calls\n with controller key
+Backend-->App: Return respective data (either transaction receipt or contract address for /api/create)
+deactivate Backend
+deactivate App
+App-->User: Show Result
+deactivate App
+deactivate User
+

@@ -10,6 +10,9 @@ Furthermore the [Frontend](https://github.com/Tuszy/phygital-frontend) must logi
 
 **0xAc11803507C05A21daAF9D354F7100B1dC9CD590**
 
+# Login
+<img src="diagram/../Login.png" />
+
 # Endpoints
 
 ## /api/mint
